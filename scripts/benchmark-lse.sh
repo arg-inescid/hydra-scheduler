@@ -1,0 +1,99 @@
+#!/bin/bash
+
+# Example usage of this script:
+# bash benchmark-lse.sh gv|gv-sf|gv-si|ow /path/to/dataset/file </path/to/results/folder>
+# The structure of the .csv file should be as follows:
+# HashOwner HashFunction AverageAllocatedMb AverageDuration Timestamp
+
+function DIR {
+    echo "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+}
+
+
+function process_dataset {
+    csv_file=$1
+    function_runtime=$2
+    invocation_collocation=$3
+    function_isolation=$4
+
+    AZURE_EXECUTOR_JAR=$(DIR)/../azure-dataset/build/libs/azure-dataset-1.0-all.jar
+    AZURE_EXECUTOR_ENTRYPOINT=org.graalvm.argo.dataset.execution.ExecutorEntryPoint
+
+    time $JAVA_HOME/bin/java -cp $AZURE_EXECUTOR_JAR $AZURE_EXECUTOR_ENTRYPOINT \
+        --input $csv_file \
+        --functionRuntime $function_runtime \
+        --invocationCollocation $invocation_collocation \
+        --functionIsolation $function_isolation \
+        --multiWorker > /tmp/lse_executor.log
+
+    wait
+
+    sleep 10
+    echo "Finished benchmark execution. Stopping the lambda manager..."
+    echo "--- Execute this command to kill LM: ---"
+    echo "sudo kill $(sudo lsof -i -P -n | grep LISTEN | grep 30009 | awk '{print $2}')"
+    sudo kill $(sudo lsof -i -P -n | grep LISTEN | grep 30009 | awk '{print $2}')
+}
+
+
+function wait_port {
+    host=$1
+    port=$2
+    while ! nc -z $host $port; do echo "Waiting for $host:$port"; sleep 1; done
+}
+
+sudo ls &> /dev/null
+
+MODE=$1
+DATASET_FILE=$2
+RESULTS_DIR=$3
+ARGO_HOME=$(DIR)/../../argo/
+LAMBDA_MANAGER_CONFIG=$ARGO_HOME/run/configs/manager/default-lambda-manager.json
+LAMBDA_MANAGER_HOST=localhost
+LAMBDA_MANAGER_PORT=30009
+LAMBDA_MANAGER_ADDRESS="$LAMBDA_MANAGER_HOST:$LAMBDA_MANAGER_PORT"
+
+
+if [[ "$MODE" = "gv" ]]; then
+    FUNCTION_RUNTIME=graalvisor
+    FUNCTION_ISOLATION=false
+    INVOCATION_COLLOCATION=true
+elif [[ "$MODE" = "gv-sf" ]]; then
+    FUNCTION_RUNTIME=graalvisor
+    FUNCTION_ISOLATION=true
+    INVOCATION_COLLOCATION=true
+elif [[ "$MODE" = "gv-si" ]]; then
+    FUNCTION_RUNTIME=graalvisor
+    FUNCTION_ISOLATION=true
+    INVOCATION_COLLOCATION=false
+elif [[ "$MODE" = "ow" ]]; then
+    FUNCTION_RUNTIME=openwhisk
+    FUNCTION_ISOLATION=true
+    INVOCATION_COLLOCATION=false
+else
+    echo "Syntax: <mode> </path/to/dataset/directory>"
+	exit 1
+fi
+
+
+# Deploy lambda manager and wait for it to launch
+bash $ARGO_HOME/lambda-manager/deploy.sh &
+wait_port $LAMBDA_MANAGER_HOST $LAMBDA_MANAGER_PORT
+
+# To ensure that the LM process is started up properly
+sleep 60
+
+# Configure lambda manager
+curl -s -X POST $LAMBDA_MANAGER_ADDRESS/configure_manager -H 'Content-Type: application/json' --data-binary @"$LAMBDA_MANAGER_CONFIG"
+
+process_dataset $DATASET_FILE $FUNCTION_RUNTIME $INVOCATION_COLLOCATION $FUNCTION_ISOLATION &
+
+wait
+
+# Save results (always overwriting previous files)
+if [ -n "$RESULTS_DIR" ]
+then
+    cp $ARGO_HOME/lambda-manager/manager_metrics/metrics.log $RESULTS_DIR/"$MODE"_metrics.log
+    cp $ARGO_HOME/lambda-manager/manager_logs/lambda_manager.log $RESULTS_DIR/"$MODE"_manager.log
+    # tar vzcf $RESULTS_DIR/$MODE-lambda_logs.tar.gz $ARGO_HOME/lambda-manager/lambda_logs
+fi
