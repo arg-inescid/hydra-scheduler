@@ -37,3 +37,6 @@ for port in $( seq $FIRST_PORT $(( $FIRST_PORT + $COUNT - 1 )) ); do
     $JAVA_HOME/bin/java -cp $DIR/target/fakeworker-1.0-SNAPSHOT.jar org.fakeworker.server.Server $port &> $TMP_DIR/$port/worker.log &
     echo $! > $TMP_DIR/$port/worker.pid
 done
+
+# To see how many fake workers are running:
+# sudo lsof -i -P -n | grep LISTEN | grep <username> | grep "TCP 127.0.0.1:30" | wc -l
