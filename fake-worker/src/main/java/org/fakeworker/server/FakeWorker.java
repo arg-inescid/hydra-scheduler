@@ -17,12 +17,12 @@ public class FakeWorker {
         Scanner scanner = new Scanner(payload);
         String op = scanner.next();
         if ("i".equals(op) && scanner.hasNextInt()) {
-            // <req-id> i <duration>
+            // i <duration>
             // Return in a callback later.
             int duration = scanner.nextInt();
             callbacks.offer(new InvocationCallback(requestId, System.currentTimeMillis() + duration, client, readTimestamp));
         } else if ("u".equals(op)) {
-            // <req-id> u
+            // u
             // Return immediately.
             String response = String.format(TIMESTAMPS_RESPONSE_TEMPLATE, readTimestamp, System.currentTimeMillis());
             Server.writeResponse(requestId, response.getBytes(), client);

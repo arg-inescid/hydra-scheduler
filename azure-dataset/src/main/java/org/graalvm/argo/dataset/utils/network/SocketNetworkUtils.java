@@ -55,10 +55,10 @@ public class SocketNetworkUtils {
 
     }
 
-    public static void waitForResponses(long millisecods) {
+    public static void waitForResponses(long milliseconds) {
         long begin = System.currentTimeMillis();
         long current = System.currentTimeMillis();
-        while (current != begin + millisecods) {
+        while (current != begin + milliseconds) {
             SocketNetworkUtils.readAllAvailable();
             current = System.currentTimeMillis();
         }

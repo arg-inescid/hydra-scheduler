@@ -12,7 +12,7 @@ if [[ -z "${JAVA_HOME}" ]]; then
     exit 1
 fi
 
-cd "$ARGO_HOME/../benchmarks/fake-worker" || {
+cd "$DIR" || {
     echo "Redirection fails!"
     exit 1
 }

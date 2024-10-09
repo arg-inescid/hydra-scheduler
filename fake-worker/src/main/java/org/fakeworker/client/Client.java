@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class Client {
 
-    private static final String ADDRESS = "localhost:5454";
+    private static final String ADDRESS = "localhost:30009";
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -16,7 +16,7 @@ public class Client {
             if ("close".equals(input)) {
                 break;
             } else if (!input.isEmpty()) {
-                NetworkUtils.send(ADDRESS, input, true, System.out::println);
+                NetworkUtils.send(ADDRESS, input, false, System.out::println);
             }
             NetworkUtils.readAvailable(ADDRESS);
         }

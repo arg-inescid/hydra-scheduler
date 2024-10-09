@@ -17,9 +17,9 @@ import java.util.function.Consumer;
 
 public class SocketConnection implements Closeable {
 
-    private SocketChannel channel;
+    private final SocketChannel channel;
     private ByteBuffer buffer;
-    private Selector selector;
+    private final Selector selector;
     private final AtomicInteger requestId;
     private final Map<Integer, Consumer<String>> callbackBacklog;
     private boolean isClosed;
