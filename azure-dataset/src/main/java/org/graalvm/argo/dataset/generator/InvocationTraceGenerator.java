@@ -1,4 +1,4 @@
-package org.graalvm.argo.dataset;
+package org.graalvm.argo.dataset.generator;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -24,6 +24,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.graalvm.argo.dataset.Invocation;
 
 /**
  * This class generates an invocation trace from the azure dataset. Given a set

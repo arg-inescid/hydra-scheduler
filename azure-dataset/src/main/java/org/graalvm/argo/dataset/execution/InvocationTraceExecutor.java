@@ -1,14 +1,12 @@
 package org.graalvm.argo.dataset.execution;
 
-import org.graalvm.argo.dataset.InvocationTraceGenerator;
+import org.graalvm.argo.dataset.generator.InvocationTraceGenerator;
 import org.graalvm.argo.dataset.multilang.FunctionLanguage;
-import org.graalvm.argo.dataset.utils.network.HttpClientNetworkUtils;
 import org.graalvm.argo.dataset.utils.network.SocketNetworkUtils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;

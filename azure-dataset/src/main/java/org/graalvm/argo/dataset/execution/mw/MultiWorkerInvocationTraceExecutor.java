@@ -1,6 +1,6 @@
 package org.graalvm.argo.dataset.execution.mw;
 
-import org.graalvm.argo.dataset.InvocationTraceGenerator;
+import org.graalvm.argo.dataset.generator.InvocationTraceGenerator;
 import org.graalvm.argo.dataset.execution.Environment;
 import org.graalvm.argo.dataset.execution.ExecutorConfiguration;
 import org.graalvm.argo.dataset.execution.InvocationTraceExecutor;

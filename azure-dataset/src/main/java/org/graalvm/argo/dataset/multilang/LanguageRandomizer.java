@@ -7,7 +7,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.graalvm.argo.dataset.Invocation;
-import org.graalvm.argo.dataset.InvocationTraceGenerator;
+import org.graalvm.argo.dataset.generator.InvocationTraceGenerator;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

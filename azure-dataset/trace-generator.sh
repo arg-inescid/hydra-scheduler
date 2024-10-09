@@ -11,6 +11,6 @@ cd "$DIR" || {
 }
 
 JAR=$DIR/build/libs/azure-dataset-1.0-all.jar
-MAIN=org.graalvm.argo.dataset.InvocationTraceGenerator
+MAIN=org.graalvm.argo.dataset.generator.InvocationTraceGenerator
 
 $JAVA_HOME/bin/java -cp $JAR $MAIN $@

@@ -1,5 +1,7 @@
 package org.graalvm.argo.dataset;
 
+import org.graalvm.argo.dataset.generator.InvocationTraceGenerator;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;

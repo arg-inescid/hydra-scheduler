@@ -1,4 +1,4 @@
-package org.graalvm.argo.dataset;
+package org.graalvm.argo.dataset.generator;
 
 import java.util.HashSet;
 import java.util.Set;
