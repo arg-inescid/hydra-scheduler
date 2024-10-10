@@ -2,27 +2,28 @@ package org.fakeworker.server;
 
 import java.nio.channels.SocketChannel;
 import java.util.PriorityQueue;
-import java.util.Scanner;
 
 public class FakeWorker {
 
     private static final String TIMESTAMPS_RESPONSE_TEMPLATE = "%d %d";
-
     private static final String UNKNOWN_RESPONSE_TEMPLATE = "Unknown request type!";
+
+    private static final String REQUEST_DURATION_PARAMETER = "request_duration=";
 
     private static final PriorityQueue<InvocationCallback> callbacks = new PriorityQueue<>();
 
 
     public static void processPayload(int requestId, String payload, SocketChannel client, long readTimestamp) {
-        Scanner scanner = new Scanner(payload);
-        String op = scanner.next();
-        if ("i".equals(op) && scanner.hasNextInt()) {
-            // i <duration>
+        if (payload.startsWith("i ")) {
+            // i ... request_duration=X ...
             // Return in a callback later.
-            int duration = scanner.nextInt();
+            int beginningIndex = payload.indexOf(REQUEST_DURATION_PARAMETER) + REQUEST_DURATION_PARAMETER.length();
+            int endIndex = payload.indexOf(" ", beginningIndex);
+            endIndex = endIndex == -1 ? payload.length() : endIndex;
+            int duration = Integer.parseInt(payload.substring(beginningIndex, endIndex));
             callbacks.offer(new InvocationCallback(requestId, System.currentTimeMillis() + duration, client, readTimestamp));
-        } else if ("u".equals(op)) {
-            // u
+        } else if (payload.startsWith("u ")) {
+            // u ...
             // Return immediately.
             String response = String.format(TIMESTAMPS_RESPONSE_TEMPLATE, readTimestamp, System.currentTimeMillis());
             Server.writeResponse(requestId, response.getBytes(), client);
@@ -41,9 +42,6 @@ public class FakeWorker {
             cb.run();
             ++processed;
         }
-//        System.out.println("Max remaining: " + (callbacks.stream().mapToInt(InvocationCallback::getEstimatedTime).max().orElse(0)));
-//        System.out.println("Num above 5000: " + (callbacks.stream().mapToInt(InvocationCallback::getEstimatedTime).filter(x -> x > 5000).count()));
-//        System.out.println("Num total: " + (callbacks.size()));
         return processed;
     }
 

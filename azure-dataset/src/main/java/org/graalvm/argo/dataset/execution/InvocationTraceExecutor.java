@@ -99,41 +99,36 @@ public class InvocationTraceExecutor {
     }
 
     public void uploadFunction(String address, String owner, String function, FunctionLanguage language, int functionId) {
-        uploadFunction(address, owner, function, language, functionId, true);
-    }
-
-    public void uploadFunction(String address, String owner, String function, FunctionLanguage language, int functionId, boolean includeBody) {
         ExecutorConfiguration.FunctionConfiguration functionConfig = config.getFunctionConfiguration(language, functionId);
         // Graalvisor Python/JavaScript benchmarks have Java wrappers.
         FunctionLanguage actualLanguage = Environment.GRAALVISOR_RUNTIME.equals(config.functionRuntime) ? FunctionLanguage.JAVA : language;
-        String queryParameters = "username=" + owner + "&function_name=" + function +
-                "&function_language=" + actualLanguage + "&function_entry_point=" + functionConfig.entryPoint +
-                "&function_memory=" + functionConfig.memory + "&function_runtime=" + config.functionRuntime +
-                "&function_isolation=" + config.functionIsolation + "&invocation_collocation=" + config.invocationCollocation;
+        String message = "u username=" + owner + " function_name=" + function +
+                " function_language=" + actualLanguage + " function_entry_point=" + functionConfig.entryPoint +
+                " function_memory=" + functionConfig.memory + " function_runtime=" + config.functionRuntime +
+                " function_isolation=" + config.functionIsolation + " invocation_collocation=" + config.invocationCollocation;
         if (functionConfig.gvSandbox != null) {
-            queryParameters = queryParameters + "&gv_sandbox=" + functionConfig.gvSandbox;
+            message = message + " gv_sandbox=" + functionConfig.gvSandbox;
             // For Python/JS functions that need sandbox snapshotting.
             if ("context-snapshot".equals(functionConfig.gvSandbox) && functionConfig.svmId != null) {
-                queryParameters = queryParameters + "&svm_id=" + functionConfig.svmId;
+                message = message + " svm_id=" + functionConfig.svmId;
             }
         }
+        // Append path to the function as payload in ''.
+        message = message + " '" + functionConfig.code + "'";
         if (!config.isDebugMode()) {
-            String payload = includeBody ? functionConfig.code : "";
-            SocketNetworkUtils.send(address, "u", false, (s) -> {});
+            SocketNetworkUtils.send(address, message, false, (s) -> {});
         }
     }
 
     public void invokeFunction(String address, String owner, String function, int timestamp, int duration, FunctionLanguage language, int functionId, Consumer<String> asyncConsumer) {
-        invokeFunction(address, owner, function, timestamp, duration, language, functionId, asyncConsumer, true);
-    }
-
-    public void invokeFunction(String address, String owner, String function, int timestamp, int duration, FunctionLanguage language, int functionId, Consumer<String> asyncConsumer, boolean includeBody) {
         if (config.isDebugMode()) {
             System.out.println("Sending request with timestamp: " + timestamp);
         } else {
             ExecutorConfiguration.FunctionConfiguration functionConfig = config.getFunctionConfiguration(language, functionId);
-            String payload = includeBody ? functionConfig.payload : "";
-            SocketNetworkUtils.send(address, "i " + duration, true, asyncConsumer);
+            String message = "i username=" + owner + " function_name=" + function +
+                    " request_duration=" + duration +
+                    " '" + functionConfig.payload + "'"; // Append invocation parameters as payload in ''.
+            SocketNetworkUtils.send(address, message, true, asyncConsumer);
         }
     }
 }

@@ -32,7 +32,6 @@ public class Server {
         serverSocket.register(selector, SelectionKey.OP_ACCEPT);
 
         while (true) {
-            int requests = 0;
             long before = System.currentTimeMillis();
             selector.select(5); // TODO: maybe selectNow()?
             Set<SelectionKey> selectedKeys = selector.selectedKeys();
@@ -46,12 +45,8 @@ public class Server {
                     while (!read(key, before)) {}
                 }
                 iter.remove();
-                ++requests;
             }
-            // System.out.println("Time took to add requests: " + (System.currentTimeMillis() - before) + ", requests: " + requests);
-            before = System.currentTimeMillis();
-            int processed = FakeWorker.processCallbacks();
-            // System.out.println("Time took to process callbacks: " + (System.currentTimeMillis() - before) + ", processed: " + processed);
+            FakeWorker.processCallbacks();
         }
     }
 

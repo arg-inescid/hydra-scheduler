@@ -19,7 +19,7 @@ public class PhysicalFakeWorker extends AbstractWorker {
     @Override
     public void ensureUploaded(String owner, String function, FunctionLanguage language, int functionId) {
         if (!functions.contains(owner + "_" + function)) {
-            executor.uploadFunction(address, owner, function, language, functionId, false);
+            executor.uploadFunction(address, owner, function, language, functionId);
             owners.add(owner);
             functions.add(owner + "_" + function);
         }
@@ -28,7 +28,7 @@ public class PhysicalFakeWorker extends AbstractWorker {
     @Override
     public void acceptFunctionInvocation(String owner, String function, int functionMemory, int duration, int timestamp, FunctionLanguage language, int functionId) {
         memoryManager.startRequest(owner, function, functionMemory);
-        executor.invokeFunction(address, owner, function, timestamp, duration, language, functionId, new InvocationCallback(this, owner, function, duration), false);
+        executor.invokeFunction(address, owner, function, timestamp, duration, language, functionId, new InvocationCallback(this, owner, function, duration));
         ++totalRequests;
     }
 
@@ -57,7 +57,7 @@ public class PhysicalFakeWorker extends AbstractWorker {
             worker.memoryManager.finishRequest(owner, function);
             long actualDuration = actualEndTimestamp - startTimestamp;
             MultiWorkerInvocationTraceExecutor.differences.add(actualDuration - duration);
-            MultiWorkerInvocationTraceExecutor.ratios.add((double) actualDuration / duration == 0 ? 0.1 : (double) duration);
+            MultiWorkerInvocationTraceExecutor.ratios.add((double) actualDuration / (duration == 0 ? 0.1 : (double) duration));
             MultiWorkerInvocationTraceExecutor.networkSend.add(msgReceivedTs - startTimestamp);
             MultiWorkerInvocationTraceExecutor.workerProcess.add(msgRespondedTs - msgReceivedTs);
             MultiWorkerInvocationTraceExecutor.traceDurations.add(duration);
