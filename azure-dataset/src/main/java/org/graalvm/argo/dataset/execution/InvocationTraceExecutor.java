@@ -27,7 +27,10 @@ public class InvocationTraceExecutor {
             String line;
             String[] splitRow;
             br.readLine(); // To skip the header
-            int currentTimestamp = 0;
+            /* Timestamp used to understand whether the executor is too slow or too fast compared to the trace. */
+            long beginningTimestamp = System.currentTimeMillis();
+            /* Used to avoid waiting on the same period multiple times. */
+            int checkedTimestamp = 0;
             while ((line = br.readLine()) != null) {
                 splitRow = line.split(InvocationTraceGenerator.DELIMITER);
                 String owner = splitRow[0];
@@ -37,8 +40,11 @@ public class InvocationTraceExecutor {
                 int functionId = Integer.parseInt(splitRow[6]);
                 String function = config.getFunctionConfiguration(language, functionId).functionName;
 
-                waitForInvocation(currentTimestamp, timestamp);
-                currentTimestamp = timestamp;
+                /* Periodically check if we need to slow down the executor. */
+                if (timestamp != checkedTimestamp && timestamp % Environment.WAIT_PERIOD_MS == 0) {
+                    waitForInvocation(timestamp, System.currentTimeMillis() - beginningTimestamp);
+                    checkedTimestamp = timestamp;
+                }
 
                 invokeFunction(config.getLambdaManagerAddress(), owner, function, timestamp, duration, language, functionId, (s) -> {});
             }
@@ -70,17 +76,6 @@ public class InvocationTraceExecutor {
         if (!uploadedFunctions.contains(owner + "_" + function)) {
             uploadFunction(config.getLambdaManagerAddress(), owner, function, language, functionId);
             uploadedFunctions.add(owner + "_" + function);
-        }
-    }
-
-    protected void waitForInvocation(int currentTimestamp, int invocationTimestamp) {
-        int timeToSleep = invocationTimestamp - currentTimestamp;
-        if (timeToSleep != 0) {
-            try {
-                Thread.sleep(timeToSleep);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
     }
 

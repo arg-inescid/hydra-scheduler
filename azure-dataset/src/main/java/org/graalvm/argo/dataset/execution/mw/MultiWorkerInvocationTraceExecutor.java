@@ -160,6 +160,7 @@ public class MultiWorkerInvocationTraceExecutor extends InvocationTraceExecutor 
         System.out.println("Avg worker time: " + workerProcess.stream().mapToLong(x -> x).average().orElse(0));
         System.out.println("Avg trace duration: " + traceDurations.stream().mapToLong(x -> x).average().orElse(0));
         System.out.println("Avg network recv: " + networkRecv.stream().mapToLong(x -> x).average().orElse(0));
+        System.out.println("Total requests returned: " + differences.size());
         /*-------------------------------------*/
         System.out.println("Overallocated " + overalloc + " requests.");
         if (Environment.REAL_WORKER_INDEX >= 0 && Environment.REAL_WORKER_INDEX < workers.length) {
