@@ -10,6 +10,10 @@ function DIR {
 }
 
 
+WORKER_COUNT=150
+FIRST_PORT=30010
+
+
 function process_dataset {
     csv_file=$1
     function_runtime=$2
@@ -48,10 +52,8 @@ MODE=$1
 DATASET_FILE=$2
 RESULTS_DIR=$3
 ARGO_HOME=$(DIR)/../../argo/
-LAMBDA_MANAGER_CONFIG=$ARGO_HOME/run/configs/manager/default-lambda-manager.json
 LAMBDA_MANAGER_HOST=localhost
 LAMBDA_MANAGER_PORT=30009
-LAMBDA_MANAGER_ADDRESS="$LAMBDA_MANAGER_HOST:$LAMBDA_MANAGER_PORT"
 
 
 if [[ "$MODE" = "gv" ]]; then
@@ -77,18 +79,19 @@ fi
 
 
 # Deploy lambda manager and wait for it to launch
-bash $ARGO_HOME/lambda-manager/deploy.sh &
+bash $ARGO_HOME/lambda-manager/deploy.sh socket &
 wait_port $LAMBDA_MANAGER_HOST $LAMBDA_MANAGER_PORT
 
-# To ensure that the LM process is started up properly
-sleep 60
+# bash $(DIR)/../fake-worker/deploy-swarm.sh $WORKER_COUNT $FIRST_PORT
 
-# Configure lambda manager
-curl -s -X POST $LAMBDA_MANAGER_ADDRESS/configure_manager -H 'Content-Type: application/json' --data-binary @"$LAMBDA_MANAGER_CONFIG"
+# To ensure that the LM process and fake workers are started up properly
+sleep 10
 
 process_dataset $DATASET_FILE $FUNCTION_RUNTIME $INVOCATION_COLLOCATION $FUNCTION_ISOLATION &
 
 wait
+
+# bash $(DIR)/../fake-worker/cleanup-swarm.sh
 
 # Save results (always overwriting previous files)
 if [ -n "$RESULTS_DIR" ]
