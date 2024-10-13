@@ -3,7 +3,7 @@ package org.graalvm.argo.dataset.execution;
 public class Environment {
 
     // General configuration.
-    public final static int WORKER_COUNT = 150;
+    public final static int WORKER_COUNT = 100;
     public final static int MAX_MEMORY_PER_WORKER_MB = 106496;
     // Negate if you don't want to insert real worker.
     public final static int REAL_WORKER_INDEX = -6;
@@ -17,7 +17,7 @@ public class Environment {
 
     // Fake worker configuration.
     public static final String FAKE_WORKER_HOST = "localhost";
-    public final static int FAKE_WORKER_FIRST_PORT = 30010;
+    public final static int FAKE_WORKER_FIRST_PORT = 50010;
 
     public static final int VM_MEMORY = 256;
 

@@ -46,11 +46,13 @@ public class InvocationTraceExecutor {
                     checkedTimestamp = timestamp;
                 }
 
-                invokeFunction(config.getLambdaManagerAddress(), owner, function, timestamp, duration, language, functionId, (s) -> {});
+                invokeFunction(config.getLambdaManagerAddress(), owner, function, timestamp, duration, language, functionId, System.out::println);
+                SocketNetworkUtils.readAllAvailable();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        SocketNetworkUtils.waitForResponses(5000);
     }
 
     private void uploadFunctions(String invocationsFilePath) {

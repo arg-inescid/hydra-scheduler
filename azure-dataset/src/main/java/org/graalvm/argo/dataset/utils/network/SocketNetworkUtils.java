@@ -58,7 +58,7 @@ public class SocketNetworkUtils {
     public static void waitForResponses(long milliseconds) {
         long begin = System.currentTimeMillis();
         long current = System.currentTimeMillis();
-        while (current != begin + milliseconds) {
+        while (current < begin + milliseconds) {
             SocketNetworkUtils.readAllAvailable();
             current = System.currentTimeMillis();
         }
