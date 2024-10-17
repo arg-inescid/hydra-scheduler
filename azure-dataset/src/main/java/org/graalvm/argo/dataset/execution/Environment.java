@@ -26,6 +26,7 @@ public class Environment {
     private static final String URL_SNAP = "{\"url\":\"" + HOST_ADDRESS + "/snap.png\"}";
 
     public static final String GRAALVISOR_RUNTIME = "graalvisor";
+    public static final String GRAALOS_RUNTIME = "graalos";
 
     // Graalvisor benchmarks.
     // Python

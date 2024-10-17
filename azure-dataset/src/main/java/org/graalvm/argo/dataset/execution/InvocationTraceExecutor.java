@@ -52,7 +52,7 @@ public class InvocationTraceExecutor {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        SocketNetworkUtils.waitForResponses(5000);
+        SocketNetworkUtils.waitForResponses(15000);
     }
 
     private void uploadFunctions(String invocationsFilePath) {

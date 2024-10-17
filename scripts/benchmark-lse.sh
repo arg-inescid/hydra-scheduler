@@ -28,7 +28,7 @@ function process_dataset {
         --functionRuntime $function_runtime \
         --invocationCollocation $invocation_collocation \
         --functionIsolation $function_isolation \
-        --multiWorker > /tmp/lse_executor.log
+        --multiWorker &> /tmp/lse_executor.log
 
     wait
 
@@ -70,6 +70,10 @@ elif [[ "$MODE" = "gv-si" ]]; then
     INVOCATION_COLLOCATION=false
 elif [[ "$MODE" = "ow" ]]; then
     FUNCTION_RUNTIME=openwhisk
+    FUNCTION_ISOLATION=true
+    INVOCATION_COLLOCATION=false
+elif [[ "$MODE" = "gos" ]]; then
+    FUNCTION_RUNTIME=graalos
     FUNCTION_ISOLATION=true
     INVOCATION_COLLOCATION=false
 else

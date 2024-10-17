@@ -50,6 +50,13 @@ public class ExecutorConfiguration {
                     new FunctionConfiguration(Environment.PY_UPLOADER_NAME, Environment.GV_PY_UPLOADER_CODE, Environment.GV_PY_UPLOADER_ENTRYPOINT, Environment.PY_UPLOADER_PARAMETERS, Environment.PY_UPLOADER_MEMORY, Environment.GV_PY_SANDBOX, Environment.GV_PY_UPLOADER_SVMID),
                     new FunctionConfiguration(Environment.PY_COMPRESSION_NAME, Environment.GV_PY_COMPRESSION_CODE, Environment.GV_PY_COMPRESSION_ENTRYPOINT, Environment.PY_COMPRESSION_PARAMETERS, Environment.PY_COMPRESSION_MEMORY, Environment.GV_PY_SANDBOX, Environment.GV_PY_COMPRESSION_SVMID)
             };
+        } else if (Environment.GRAALOS_RUNTIME.equals(this.functionRuntime)) {
+            javaConfigs = new FunctionConfiguration[]{
+                    // Function code location, entrypoint, and parameters don't matter at this moment.
+                    new FunctionConfiguration(Environment.JV_HELLOWORLD_NAME, Environment.GV_JV_HELLOWORLD_CODE, Environment.GV_JV_HELLOWORLD_ENTRYPOINT, Environment.JV_HELLOWORLD_PARAMETERS, Environment.JV_HELLOWORLD_MEMORY)
+            };
+            javaScriptConfigs = null;
+            pythonConfigs = null;
         } else {
             // Add function configs for OpenWhisk.
             javaConfigs = new FunctionConfiguration[] {
