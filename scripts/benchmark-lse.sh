@@ -10,8 +10,8 @@ function DIR {
 }
 
 
-WORKER_COUNT=150
-FIRST_PORT=30010
+WORKER_COUNT=100
+FIRST_PORT=50010
 
 
 function process_dataset {
@@ -86,7 +86,7 @@ fi
 bash $ARGO_HOME/lambda-manager/deploy.sh socket &
 wait_port $LAMBDA_MANAGER_HOST $LAMBDA_MANAGER_PORT
 
-# bash $(DIR)/../fake-worker/deploy-swarm.sh $WORKER_COUNT $FIRST_PORT
+bash $(DIR)/../fake-worker/deploy-swarm.sh $WORKER_COUNT $FIRST_PORT
 
 # To ensure that the LM process and fake workers are started up properly
 sleep 10
@@ -95,7 +95,7 @@ process_dataset $DATASET_FILE $FUNCTION_RUNTIME $INVOCATION_COLLOCATION $FUNCTIO
 
 wait
 
-# bash $(DIR)/../fake-worker/cleanup-swarm.sh
+bash $(DIR)/../fake-worker/cleanup-swarm.sh
 
 # Save results (always overwriting previous files)
 if [ -n "$RESULTS_DIR" ]
