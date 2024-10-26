@@ -176,9 +176,11 @@ public class InvocationTraceGenerator {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
             br.readLine(); // To skip the header
+            int fcounter = 1;
 
             while ((line = br.readLine()) != null) {
                 processFunction(line, firstMinute, lastMinute);
+                System.out.println("Processed function " + fcounter++);
             }
             System.out.println("Skipped " + skipped + " functions due to lack of information.");
             br.close();
