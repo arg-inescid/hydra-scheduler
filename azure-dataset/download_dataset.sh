@@ -14,6 +14,7 @@ mkdir -p input
 cd input
 
 echo -e "${GREEN}Downloading Azure dataset...${NC}"
+wget https://azurepublicdatasettraces.blob.core.windows.net/azurepublicdatasetv2/azurefunctions_dataset2019/azurefunctions-dataset2019.tar.xz
 wget https://azurecloudpublicdataset2.blob.core.windows.net/azurepublicdatasetv2/azurefunctions_dataset2019/azurefunctions-dataset2019.tar.xz
 echo -e "${GREEN}Downloading Azure dataset...done${NC}"
 

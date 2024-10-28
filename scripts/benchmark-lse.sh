@@ -9,6 +9,8 @@ function DIR {
     echo "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 }
 
+# TODO - check ARGO_HOME and return.
+
 
 WORKER_COUNT=100
 FIRST_PORT=50010
@@ -51,7 +53,6 @@ sudo ls &> /dev/null
 MODE=$1
 DATASET_FILE=$2
 RESULTS_DIR=$3
-ARGO_HOME=$(DIR)/../../argo/
 LAMBDA_MANAGER_HOST=localhost
 LAMBDA_MANAGER_PORT=30009
 

@@ -52,7 +52,8 @@ public class Environment {
     public static final String GV_JS_DYNAMICHTML_SVMID = "3";
     public static final String GV_JS_SANDBOX = "context-snapshot";
     // Java
-    public static final String GV_JV_HELLOWORLD_CODE = ARGO_HOME_PATH + "/../benchmarks/src/java/gv-hello-world/build/libhelloworld.so";
+    // TODO - update benchmarks directory stucture.
+    public static final String GV_JV_HELLOWORLD_CODE = ARGO_HOME_PATH + "/benchmarks/src/java/gv-hello-world/build/libhelloworld.so";
     public static final String GV_JV_HELLOWORLD_ENTRYPOINT = "com.hello_world.HelloWorld";
     public static final String GV_JV_FILEHASHING_CODE = ARGO_HOME_PATH + "/../benchmarks/src/java/gv-file-hashing/build/libfilehashing.so";
     public static final String GV_JV_FILEHASHING_ENTRYPOINT = "com.filehashing.FileHashing";
