@@ -9,8 +9,17 @@ function DIR {
     echo "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 }
 
-# TODO - check ARGO_HOME and return.
+source $(DIR)/shared.sh
 
+if [[ -z "${ARGO_HOME}" ]]; then
+    echo "ARGO_HOME is not defined. Exiting..."
+    exit 1
+fi
+
+if [[ -z "${JAVA_HOME}" ]]; then
+    echo "JAVA_HOME is not defined. Exiting..."
+    exit 1
+fi
 
 WORKER_COUNT=100
 FIRST_PORT=50010
@@ -36,25 +45,16 @@ function process_dataset {
 
     sleep 10
     echo "Finished benchmark execution. Stopping the lambda manager..."
-    echo "--- Execute this command to kill LM: ---"
-    echo "sudo kill $(sudo lsof -i -P -n | grep LISTEN | grep 30009 | awk '{print $2}')"
-    sudo kill $(sudo lsof -i -P -n | grep LISTEN | grep 30009 | awk '{print $2}')
+    stop_lambda_manager
 }
 
-
-function wait_port {
-    host=$1
-    port=$2
-    while ! nc -z $host $port; do echo "Waiting for $host:$port"; sleep 1; done
-}
-
-sudo ls &> /dev/null
 
 MODE=$1
 DATASET_FILE=$2
 RESULTS_DIR=$3
-LAMBDA_MANAGER_HOST=localhost
-LAMBDA_MANAGER_PORT=30009
+
+LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/default-lambda-manager.json"
+LAMBDA_MANAGER_VARIABLES="$ARGO_HOME/run/configs/manager/default-variables.json"
 
 
 if [[ "$MODE" = "gv" ]]; then
@@ -84,8 +84,7 @@ fi
 
 
 # Deploy lambda manager and wait for it to launch
-bash $ARGO_HOME/lambda-manager/deploy.sh socket &
-wait_port $LAMBDA_MANAGER_HOST $LAMBDA_MANAGER_PORT
+start_lambda_manager $LAMBDA_MANAGER_CONFIGURATION $LAMBDA_MANAGER_VARIABLES
 
 bash $(DIR)/../fake-worker/deploy-swarm.sh $WORKER_COUNT $FIRST_PORT
 

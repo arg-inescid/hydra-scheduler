@@ -12,9 +12,13 @@ function DIR {
     echo "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 }
 
+if [[ -z "${JAVA_HOME}" ]]; then
+    echo "JAVA_HOME is not defined. Exiting..."
+    exit 1
+fi
 
 WORKER_COUNT=100
-FIRST_PORT=30010
+FIRST_PORT=50010
 
 
 function process_dataset {
@@ -64,12 +68,12 @@ else
 	exit 1
 fi
 
-# bash $(DIR)/../fake-worker/deploy-swarm.sh $WORKER_COUNT $FIRST_PORT
+bash $(DIR)/../fake-worker/deploy-swarm.sh $WORKER_COUNT $FIRST_PORT
 
 sleep 1
 
 process_dataset $DATASET_FILE $FUNCTION_RUNTIME $INVOCATION_COLLOCATION $FUNCTION_ISOLATION &
 
-# bash $(DIR)/../fake-worker/cleanup-swarm.sh
+bash $(DIR)/../fake-worker/cleanup-swarm.sh
 
 wait

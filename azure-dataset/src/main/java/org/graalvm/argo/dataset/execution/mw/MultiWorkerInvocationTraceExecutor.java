@@ -111,9 +111,13 @@ public class MultiWorkerInvocationTraceExecutor extends InvocationTraceExecutor 
                 beforeTmp = System.nanoTime();
                 AbstractWorker worker = schedule(owner, function, functionMemory);
                 timeInSchedule += (System.nanoTime() - beforeTmp);
-                beforeTmp = System.nanoTime();
-                worker.ensureUploaded(owner, function, language, functionId);
-                timeInEnsureUploaded += (System.nanoTime() - beforeTmp);
+
+                if (worker != null) {
+                    beforeTmp = System.nanoTime();
+                    worker.ensureUploaded(owner, function, language, functionId);
+                    timeInEnsureUploaded += (System.nanoTime() - beforeTmp);
+                }
+
                 beforeTmp = System.nanoTime();
                 /* Periodically check if we need to slow down the executor. */
                 if (timestamp != checkedTimestamp && timestamp % Environment.WAIT_PERIOD_MS == 0) {
@@ -124,9 +128,11 @@ public class MultiWorkerInvocationTraceExecutor extends InvocationTraceExecutor 
                 }
                 timeInWait += (System.nanoTime() - beforeTmp);
 
-                beforeTmp = System.nanoTime();
-                worker.acceptFunctionInvocation(owner, function, functionMemory, duration, timestamp, language, functionId);
-                timeInRequest += (System.nanoTime() - beforeTmp);
+                if (worker != null) {
+                    beforeTmp = System.nanoTime();
+                    worker.acceptFunctionInvocation(owner, function, functionMemory, duration, timestamp, language, functionId);
+                    timeInRequest += (System.nanoTime() - beforeTmp);
+                }
 //                beforeTmp = System.nanoTime();
 //                evictTimedOutInvocations(timestamp);
 //                timeInEvict += (System.nanoTime() - beforeTmp);
@@ -232,6 +238,7 @@ public class MultiWorkerInvocationTraceExecutor extends InvocationTraceExecutor 
             result = findLeastUtilized();
             if (!result.canAccommodateRequest(owner, function, invocationMemory)) {
                 overalloc++;
+                result = null;
             }
         }
         return result;
