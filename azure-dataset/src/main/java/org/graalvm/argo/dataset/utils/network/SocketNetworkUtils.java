@@ -28,7 +28,6 @@ public class SocketNetworkUtils {
     }
 
     public static void readAllAvailable() {
-//        CONNECTIONS.keySet().forEach(SocketNetworkUtils::readAvailable);
         try {
             for (SocketConnection c : CONNECTIONS.values()) {
                 c.readMessages();

@@ -126,7 +126,6 @@ public class SocketConnection implements Closeable {
                     // Copy all unread bytes including two integers to the beginning, set position to continue writing.
                     buffer.compact();
                     return false;
-//                    throw new RuntimeException("Didn't read the entire message (implement safe read). Remaining: " + buffer.remaining() + ", payload length: " + payloadLength + ". Buffer limit: " + buffer.limit() + ", position: " + buffer.position() + ". Read payload: " + java.nio.charset.StandardCharsets.UTF_8.decode(buffer).toString());
                 }
                 byte[] payloadBytes = new byte[payloadLength];
                 buffer.get(payloadBytes);
