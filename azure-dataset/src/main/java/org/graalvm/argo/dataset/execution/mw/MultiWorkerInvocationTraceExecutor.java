@@ -97,6 +97,7 @@ public class MultiWorkerInvocationTraceExecutor extends InvocationTraceExecutor 
                 beforeTmp = System.nanoTime();
                 splitRow = line.split(InvocationTraceGenerator.DELIMITER);
                 String owner = splitRow[0];
+                String function = splitRow[1];
                 int duration = Integer.parseInt(splitRow[3]);
                 if (duration > 290000) {
                     duration = 290000;
@@ -104,7 +105,6 @@ public class MultiWorkerInvocationTraceExecutor extends InvocationTraceExecutor 
                 int timestamp = Integer.parseInt(splitRow[4]);
                 FunctionLanguage language = FunctionLanguage.fromString(splitRow[5]);
                 int functionId = Integer.parseInt(splitRow[6]);
-                String function = config.getFunctionConfiguration(language, functionId).functionName;
                 int functionMemory = config.getFunctionConfiguration(language, functionId).memory;
                 timeInRead += (System.nanoTime() - beforeTmp);
 
@@ -143,8 +143,8 @@ public class MultiWorkerInvocationTraceExecutor extends InvocationTraceExecutor 
                     System.out.println("Time took to update statistics (ns): " + (System.nanoTime() - before));
                 }
             }
-            // Try to wait for remaining responses for 5 seconds more.
-            SocketNetworkUtils.waitForResponses(5000);
+            // Try to wait for remaining responses for 10 seconds more.
+            SocketNetworkUtils.waitForResponses(10000);
         } catch (IOException e) {
             e.printStackTrace();
         }

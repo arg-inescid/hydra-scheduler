@@ -44,10 +44,10 @@ public class InvocationTraceExecutor {
                 if (timestamp != checkedTimestamp && timestamp % Environment.WAIT_PERIOD_MS == 0) {
                     waitForInvocation(timestamp, System.currentTimeMillis() - beginningTimestamp);
                     checkedTimestamp = timestamp;
+                    SocketNetworkUtils.readAllAvailable();
                 }
 
                 invokeFunction(config.getLambdaManagerAddress(), owner, function, timestamp, duration, language, functionId, System.out::println);
-                SocketNetworkUtils.readAllAvailable();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -113,7 +113,7 @@ public class InvocationTraceExecutor {
         // Append path to the function as payload in ''.
         message = message + " '" + functionConfig.code + "'";
         if (!config.isDebugMode()) {
-            SocketNetworkUtils.send(address, message, false, (s) -> {});
+            SocketNetworkUtils.send(address, message, true, (s) -> {});
         }
     }
 
