@@ -92,7 +92,7 @@ public class MultiWorkerInvocationTraceExecutor extends InvocationTraceExecutor 
             /* Timestamp used to understand whether the executor is too slow or too fast compared to the trace. */
             long beginningTimestamp = System.currentTimeMillis();
             /* Used to avoid waiting on the same period multiple times. */
-            int checkedTimestamp = 0;
+            int lastCheckedTimestamp = 0;
             while ((line = br.readLine()) != null) {
                 beforeTmp = System.nanoTime();
                 splitRow = line.split(InvocationTraceGenerator.DELIMITER);
@@ -120,10 +120,10 @@ public class MultiWorkerInvocationTraceExecutor extends InvocationTraceExecutor 
 
                 beforeTmp = System.nanoTime();
                 /* Periodically check if we need to slow down the executor. */
-                if (timestamp != checkedTimestamp && timestamp % Environment.WAIT_PERIOD_MS == 0) {
+                if ((timestamp - lastCheckedTimestamp) >= Environment.WAIT_PERIOD_MS) {
                     System.out.println(timestamp);
                     waitForInvocation(timestamp, System.currentTimeMillis() - beginningTimestamp);
-                    checkedTimestamp = timestamp;
+                    lastCheckedTimestamp = timestamp;
                     SocketNetworkUtils.readAllAvailable();
                 }
                 timeInWait += (System.nanoTime() - beforeTmp);

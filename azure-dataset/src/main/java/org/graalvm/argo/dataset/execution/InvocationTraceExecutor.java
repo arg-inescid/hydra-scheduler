@@ -30,20 +30,21 @@ public class InvocationTraceExecutor {
             /* Timestamp used to understand whether the executor is too slow or too fast compared to the trace. */
             long beginningTimestamp = System.currentTimeMillis();
             /* Used to avoid waiting on the same period multiple times. */
-            int checkedTimestamp = 0;
+            int lastCheckedTimestamp = 0;
             while ((line = br.readLine()) != null) {
                 splitRow = line.split(InvocationTraceGenerator.DELIMITER);
                 String owner = splitRow[0];
+                String function = splitRow[1];
                 int duration = Integer.parseInt(splitRow[3]);
                 int timestamp = Integer.parseInt(splitRow[4]);
                 FunctionLanguage language = FunctionLanguage.fromString(splitRow[5]);
                 int functionId = Integer.parseInt(splitRow[6]);
-                String function = config.getFunctionConfiguration(language, functionId).functionName;
 
                 /* Periodically check if we need to slow down the executor. */
-                if (timestamp != checkedTimestamp && timestamp % Environment.WAIT_PERIOD_MS == 0) {
+                if ((timestamp - lastCheckedTimestamp) >= Environment.WAIT_PERIOD_MS) {
+                    System.out.println(timestamp);
                     waitForInvocation(timestamp, System.currentTimeMillis() - beginningTimestamp);
-                    checkedTimestamp = timestamp;
+                    lastCheckedTimestamp = timestamp;
                     SocketNetworkUtils.readAllAvailable();
                 }
 
@@ -64,9 +65,9 @@ public class InvocationTraceExecutor {
             while ((line = br.readLine()) != null) {
                 splitRow = line.split(InvocationTraceGenerator.DELIMITER);
                 String owner = splitRow[0];
+                String function = splitRow[1];
                 FunctionLanguage language = FunctionLanguage.fromString(splitRow[5]);
                 int functionId = Integer.parseInt(splitRow[6]);
-                String function = config.getFunctionConfiguration(language, functionId).functionName;
                 ensureUploaded(uploadedFunctions, owner, function, language, functionId);
             }
         } catch (IOException e) {
