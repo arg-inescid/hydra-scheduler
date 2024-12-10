@@ -112,6 +112,7 @@ public class Environment {
     public static final String JV_HTTPREQUEST_NAME = "jvhr";
 
     // Function sizes in MB (only matters for collocatable Graalvisor).
+    // Python
     public static final int PY_HELLOWORLD_MEMORY = 1024;
     public static final int PY_UPLOADER_MEMORY = 1024;
     public static final int PY_COMPRESSION_MEMORY = 1024;
@@ -123,6 +124,20 @@ public class Environment {
     public static final int JV_HELLOWORLD_MEMORY = 1024;
     public static final int JV_FILEHASHING_MEMORY = 1024;
     public static final int JV_HTTPREQUEST_MEMORY = 1024;
+
+    // Benchmark function median durations in ms (measured with OpenWhisk runtime).
+    // Python
+    public static final int PY_HELLOWORLD_DURATION = 4;
+    public static final int PY_UPLOADER_DURATION = 7;
+    public static final int PY_COMPRESSION_DURATION = 99;
+    // JavaScript
+    public static final int JS_HELLOWORLD_DURATION = 4;
+    public static final int JS_UPLOADER_DURATION = 10;
+    public static final int JS_DYNAMICHTML_DURATION = 7;
+    // Java
+    public static final int JV_HELLOWORLD_DURATION = 5;
+    public static final int JV_FILEHASHING_DURATION = 6;
+    public static final int JV_HTTPREQUEST_DURATION = 6;
 
     // Legacy GenericApp configuration.
     public static final String GV_JV_GENERICAPP_CODE = ARGO_HOME_PATH + "/benchmarks/src/java/gv-genericapp/build/libgenericapp.so";

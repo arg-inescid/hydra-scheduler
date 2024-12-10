@@ -35,10 +35,10 @@ public class InvocationTraceExecutor {
                 splitRow = line.split(InvocationTraceGenerator.DELIMITER);
                 String owner = splitRow[0];
                 String function = splitRow[1];
-                int duration = Integer.parseInt(splitRow[3]);
                 int timestamp = Integer.parseInt(splitRow[4]);
                 FunctionLanguage language = FunctionLanguage.fromString(splitRow[5]);
                 int functionId = Integer.parseInt(splitRow[6]);
+                int duration = config.getFunctionConfiguration(language, functionId).duration;
 
                 /* Periodically check if we need to slow down the executor. */
                 if ((timestamp - lastCheckedTimestamp) >= Environment.WAIT_PERIOD_MS) {
