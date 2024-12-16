@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Example usage of this script:
-# bash benchmark-lse.sh gv|gv-sf|gv-si|ow /path/to/dataset/file </path/to/results/folder>
+# bash benchmark-lse.sh gv|gv-sf|gv-si|ow /path/to/dataset/file --single|--multi </path/to/results/folder>
 # The structure of the .csv file should be as follows:
 # HashOwner HashFunction AverageAllocatedMb AverageDuration Timestamp
 
@@ -34,12 +34,16 @@ function process_dataset {
     AZURE_EXECUTOR_JAR=$(DIR)/../azure-dataset/build/libs/azure-dataset-1.0-all.jar
     AZURE_EXECUTOR_ENTRYPOINT=org.graalvm.argo.dataset.execution.ExecutorEntryPoint
 
+    MULTI_WORKER_OPTION=
+    if [[ "$EXECUTOR_TYPE" = "--multi" ]]; then
+        MULTI_WORKER_OPTION="--multiWorker"
+    fi
+
     time $JAVA_HOME/bin/java -cp $AZURE_EXECUTOR_JAR $AZURE_EXECUTOR_ENTRYPOINT \
         --input $csv_file \
         --functionRuntime $function_runtime \
         --invocationCollocation $invocation_collocation \
-        --functionIsolation $function_isolation \
-        --multiWorker &> /tmp/lse_executor.log
+        --functionIsolation $function_isolation $MULTI_WORKER_OPTION &> $EXECUTOR_LOG_FILE
 
     wait
 
@@ -51,7 +55,8 @@ function process_dataset {
 
 MODE=$1
 DATASET_FILE=$2
-RESULTS_DIR=$3
+EXECUTOR_TYPE=$3
+RESULTS_DIR=$4
 
 LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/default-lambda-manager.json"
 LAMBDA_MANAGER_VARIABLES="$ARGO_HOME/run/configs/manager/default-variables.json"
@@ -78,7 +83,18 @@ elif [[ "$MODE" = "gos" ]]; then
     FUNCTION_ISOLATION=true
     INVOCATION_COLLOCATION=false
 else
-    echo "Syntax: <mode> </path/to/dataset/directory>"
+    echo "Syntax: <mode> </path/to/dataset/directory> <executor-type>"
+	exit 1
+fi
+
+if [[ "$EXECUTOR_TYPE" = "--single" ]]; then
+    echo "Using the single-worker deterministic executor."
+    EXECUTOR_LOG_FILE="/tmp/lse_executor-determ.log"
+elif [[ "$EXECUTOR_TYPE" = "--multi" ]]; then
+    echo "Using the multi-worker executor. Launching $WORKER_COUNT fake workers."
+    EXECUTOR_LOG_FILE="/tmp/lse_executor.log"
+else
+    echo "Syntax: <mode> </path/to/dataset/directory> <executor-type>"
 	exit 1
 fi
 
