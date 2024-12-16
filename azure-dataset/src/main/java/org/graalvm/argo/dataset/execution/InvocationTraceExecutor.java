@@ -34,11 +34,11 @@ public class InvocationTraceExecutor {
             while ((line = br.readLine()) != null) {
                 splitRow = line.split(InvocationTraceGenerator.DELIMITER);
                 String owner = splitRow[0];
-                String function = splitRow[1];
                 int timestamp = Integer.parseInt(splitRow[4]);
                 FunctionLanguage language = FunctionLanguage.fromString(splitRow[5]);
                 int functionId = Integer.parseInt(splitRow[6]);
                 int duration = config.getFunctionConfiguration(language, functionId).duration;
+                String function = config.getFunctionConfiguration(language, functionId).functionName;
 
                 /* Periodically check if we need to slow down the executor. */
                 if ((timestamp - lastCheckedTimestamp) >= Environment.WAIT_PERIOD_MS) {
@@ -65,9 +65,9 @@ public class InvocationTraceExecutor {
             while ((line = br.readLine()) != null) {
                 splitRow = line.split(InvocationTraceGenerator.DELIMITER);
                 String owner = splitRow[0];
-                String function = splitRow[1];
                 FunctionLanguage language = FunctionLanguage.fromString(splitRow[5]);
                 int functionId = Integer.parseInt(splitRow[6]);
+                String function = config.getFunctionConfiguration(language, functionId).functionName;
                 ensureUploaded(uploadedFunctions, owner, function, language, functionId);
             }
         } catch (IOException e) {
