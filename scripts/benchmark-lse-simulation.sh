@@ -37,8 +37,6 @@ function process_dataset {
         --functionIsolation $function_isolation \
         --multiWorker > /tmp/lse_executor.log
 
-    wait
-
     sleep 10
     echo "Finished benchmark execution."
 }
@@ -72,8 +70,6 @@ bash $(DIR)/../fake-worker/deploy-swarm.sh $WORKER_COUNT $FIRST_PORT
 
 sleep 1
 
-process_dataset $DATASET_FILE $FUNCTION_RUNTIME $INVOCATION_COLLOCATION $FUNCTION_ISOLATION &
+process_dataset $DATASET_FILE $FUNCTION_RUNTIME $INVOCATION_COLLOCATION $FUNCTION_ISOLATION
 
 bash $(DIR)/../fake-worker/cleanup-swarm.sh
-
-wait
