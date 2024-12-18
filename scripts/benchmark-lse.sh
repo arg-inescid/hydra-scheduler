@@ -4,11 +4,15 @@
 # bash benchmark-lse.sh gv|gv-sf|gv-si|ow /path/to/dataset/file --single|--multi </path/to/results/folder>
 # The structure of the .csv file should be as follows:
 # HashOwner HashFunction AverageAllocatedMb AverageDuration Timestamp
+#
+# Note: by default, the script assumes a remote real worker. If you want to run the
+# entire experiment locally, set LOCAL_EXECUTION environment variable to any value.
 
 function DIR {
     echo "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 }
 
+# Defines some variables and functions
 source $(DIR)/shared.sh
 
 if [[ -z "${ARGO_HOME}" ]]; then
@@ -21,6 +25,22 @@ if [[ -z "${JAVA_HOME}" ]]; then
     exit 1
 fi
 
+if [[ -n "${LOCAL_EXECUTION}" ]]; then
+    echo "Running the large scale experiment locally."
+    LAMBDA_MANAGER_ADDRESS="$LOCAL_LAMBDA_MANAGER_HOST:$LAMBDA_MANAGER_PORT"
+else
+    SSH_KEY=/home/sergiyivan/.ssh/id_rsa_inesc_cluster_sergiyivan_vitamina02
+    REMOTE_HOST=10.15.0.23
+    REMOTE_USER=sergiyivan
+    LAMBDA_MANAGER_ADDRESS="$REMOTE_HOST:$LAMBDA_MANAGER_PORT"
+
+    echo "Running the large scale experiment with a remote real worker. Configurations:"
+    echo "SSH key: $SSH_KEY"
+    echo "Worker host: $REMOTE_HOST"
+    echo "Remote host user: $REMOTE_USER"
+    echo "To run the experiment locally, please set the LOCAL_EXECUTION environment variable."
+fi
+
 WORKER_COUNT=100
 FIRST_PORT=50010
 
@@ -31,21 +51,20 @@ function process_dataset {
     invocation_collocation=$3
     function_isolation=$4
 
-    AZURE_EXECUTOR_JAR=$(DIR)/../azure-dataset/build/libs/azure-dataset-1.0-all.jar
-    AZURE_EXECUTOR_ENTRYPOINT=org.graalvm.argo.dataset.execution.ExecutorEntryPoint
+    azure_executor_jar=$(DIR)/../azure-dataset/build/libs/azure-dataset-1.0-all.jar
+    azure_executor_entrypoint=org.graalvm.argo.dataset.execution.ExecutorEntryPoint
 
-    MULTI_WORKER_OPTION=
+    multi_worker_option=
     if [[ "$EXECUTOR_TYPE" = "--multi" ]]; then
-        MULTI_WORKER_OPTION="--multiWorker"
+        multi_worker_option="--multiWorker"
     fi
 
-    time $JAVA_HOME/bin/java -cp $AZURE_EXECUTOR_JAR $AZURE_EXECUTOR_ENTRYPOINT \
+    time $JAVA_HOME/bin/java -cp $azure_executor_jar $azure_executor_entrypoint \
         --input $csv_file \
+        --lambdaManagerAddress $LAMBDA_MANAGER_ADDRESS \
         --functionRuntime $function_runtime \
         --invocationCollocation $invocation_collocation \
-        --functionIsolation $function_isolation $MULTI_WORKER_OPTION &> $EXECUTOR_LOG_FILE
-
-    wait
+        --functionIsolation $function_isolation $multi_worker_option &> $EXECUTOR_LOG_FILE
 
     sleep 10
     echo "Finished benchmark execution. Stopping the lambda manager..."
@@ -58,6 +77,7 @@ DATASET_FILE=$2
 EXECUTOR_TYPE=$3
 RESULTS_DIR=$4
 
+# Default paths
 LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/default-lambda-manager.json"
 LAMBDA_MANAGER_VARIABLES="$ARGO_HOME/run/configs/manager/default-variables.json"
 
@@ -66,18 +86,22 @@ if [[ "$MODE" = "gv" ]]; then
     FUNCTION_RUNTIME=graalvisor
     FUNCTION_ISOLATION=false
     INVOCATION_COLLOCATION=true
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/gv-lm.json"
 elif [[ "$MODE" = "gv-sf" ]]; then
     FUNCTION_RUNTIME=graalvisor
     FUNCTION_ISOLATION=true
     INVOCATION_COLLOCATION=true
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/gv-lm.json"
 elif [[ "$MODE" = "gv-si" ]]; then
     FUNCTION_RUNTIME=graalvisor
     FUNCTION_ISOLATION=true
     INVOCATION_COLLOCATION=false
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/gv-si-lm.json"
 elif [[ "$MODE" = "ow" ]]; then
     FUNCTION_RUNTIME=openwhisk
     FUNCTION_ISOLATION=true
     INVOCATION_COLLOCATION=false
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/ow-lm.json"
 elif [[ "$MODE" = "gos" ]]; then
     FUNCTION_RUNTIME=graalos
     FUNCTION_ISOLATION=true
@@ -102,21 +126,27 @@ fi
 # Deploy lambda manager and wait for it to launch
 start_lambda_manager $LAMBDA_MANAGER_CONFIGURATION $LAMBDA_MANAGER_VARIABLES
 
-bash $(DIR)/../fake-worker/deploy-swarm.sh $WORKER_COUNT $FIRST_PORT
+# Spawn fake workers
+if [[ "$EXECUTOR_TYPE" = "--multi" ]]; then
+    bash $(DIR)/../fake-worker/deploy-swarm.sh $WORKER_COUNT $FIRST_PORT
+fi
 
 # To ensure that the LM process and fake workers are started up properly
 sleep 10
 
-process_dataset $DATASET_FILE $FUNCTION_RUNTIME $INVOCATION_COLLOCATION $FUNCTION_ISOLATION &
+# Run the trace
+process_dataset $DATASET_FILE $FUNCTION_RUNTIME $INVOCATION_COLLOCATION $FUNCTION_ISOLATION
 
+# Terminate fake workers
+if [[ "$EXECUTOR_TYPE" = "--multi" ]]; then
+    bash $(DIR)/../fake-worker/cleanup-swarm.sh
+fi
+
+# Wait for the lambda manager to finish execution
 wait
-
-bash $(DIR)/../fake-worker/cleanup-swarm.sh
 
 # Save results (always overwriting previous files)
 if [ -n "$RESULTS_DIR" ]
 then
-    cp $ARGO_HOME/lambda-manager/manager_metrics/metrics.log $RESULTS_DIR/"$MODE"_metrics.log
-    cp $ARGO_HOME/lambda-manager/manager_logs/lambda_manager.log $RESULTS_DIR/"$MODE"_manager.log
-    # tar vzcf $RESULTS_DIR/$MODE-lambda_logs.tar.gz $ARGO_HOME/lambda-manager/lambda_logs
+    save_experiment_results $MODE $RESULTS_DIR
 fi
