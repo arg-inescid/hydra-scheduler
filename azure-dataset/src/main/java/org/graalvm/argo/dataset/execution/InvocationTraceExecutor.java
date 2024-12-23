@@ -107,7 +107,7 @@ public class InvocationTraceExecutor {
         if (functionConfig.gvSandbox != null) {
             message = message + " gv_sandbox=" + functionConfig.gvSandbox;
             // For Python/JS functions that need sandbox snapshotting.
-            if ("context-snapshot".equals(functionConfig.gvSandbox) && functionConfig.svmId != null) {
+            if ("snapshot".equals(functionConfig.gvSandbox) && functionConfig.svmId != null) {
                 message = message + " svm_id=" + functionConfig.svmId;
             }
         }

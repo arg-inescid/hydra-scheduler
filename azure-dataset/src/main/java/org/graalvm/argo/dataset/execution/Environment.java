@@ -39,7 +39,7 @@ public class Environment {
     public static final String GV_PY_COMPRESSION_CODE = HOST_ADDRESS + "/apps/gv-py-compression.so";
     public static final String GV_PY_COMPRESSION_ENTRYPOINT = "com.compression.Compression";
     public static final String GV_PY_COMPRESSION_SVMID = "6";
-    public static final String GV_PY_SANDBOX = "context-snapshot";
+    public static final String GV_PY_SANDBOX = "snapshot";
     // JavaScript
     public static final String GV_JS_HELLOWORLD_CODE = HOST_ADDRESS + "/apps/gv-js-hello-world.so";
     public static final String GV_JS_HELLOWORLD_ENTRYPOINT = "com.helloworld.HelloWorld";
@@ -50,7 +50,7 @@ public class Environment {
     public static final String GV_JS_DYNAMICHTML_CODE = HOST_ADDRESS + "/apps/gv-js-dynamic-html.so";
     public static final String GV_JS_DYNAMICHTML_ENTRYPOINT = "com.dynamichtml.DynamicHTML";
     public static final String GV_JS_DYNAMICHTML_SVMID = "3";
-    public static final String GV_JS_SANDBOX = "context-snapshot";
+    public static final String GV_JS_SANDBOX = "snapshot";
     // Java
     public static final String GV_JV_HELLOWORLD_CODE = HOST_ADDRESS + "/apps/gv-jv-hello-world.so";
     public static final String GV_JV_HELLOWORLD_ENTRYPOINT = "com.hello_world.HelloWorld";
