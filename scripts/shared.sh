@@ -42,8 +42,8 @@ function stop_lambda_manager {
 
 # Assumes that $LOCAL_EXECUTION, $SSH_KEY, $REMOTE_USER, and $REMOTE_HOST are set in the caller.
 function save_experiment_results {
-    $mode=1
-    $results_dir=$2
+    mode=$1
+    results_dir=$2
     if [[ -n "${LOCAL_EXECUTION}" ]]; then
         cp $LAMBDA_MANAGER_HOME/manager_metrics/metrics.log $results_dir/"$mode"_metrics.log
         cp $LAMBDA_MANAGER_HOME/manager_logs/lambda_manager.log $results_dir/"$mode"_manager.log
