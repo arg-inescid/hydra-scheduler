@@ -33,12 +33,12 @@ public class InvocationTraceExecutor {
             int lastCheckedTimestamp = 0;
             while ((line = br.readLine()) != null) {
                 splitRow = line.split(InvocationTraceGenerator.DELIMITER);
-                String owner = splitRow[0];
+                String owner = getOwnerName(splitRow[0]);
                 int timestamp = Integer.parseInt(splitRow[4]);
                 FunctionLanguage language = FunctionLanguage.fromString(splitRow[5]);
                 int functionId = Integer.parseInt(splitRow[6]);
                 int duration = config.getFunctionConfiguration(language, functionId).duration;
-                String function = config.getFunctionConfiguration(language, functionId).functionName;
+                String function = getFunctionName(splitRow[1], language, functionId);
 
                 /* Periodically check if we need to slow down the executor. */
                 if ((timestamp - lastCheckedTimestamp) >= Environment.WAIT_PERIOD_MS) {
@@ -64,10 +64,10 @@ public class InvocationTraceExecutor {
             br.readLine(); // To skip the header
             while ((line = br.readLine()) != null) {
                 splitRow = line.split(InvocationTraceGenerator.DELIMITER);
-                String owner = splitRow[0];
+                String owner = getOwnerName(splitRow[0]);
                 FunctionLanguage language = FunctionLanguage.fromString(splitRow[5]);
                 int functionId = Integer.parseInt(splitRow[6]);
-                String function = config.getFunctionConfiguration(language, functionId).functionName;
+                String function = getFunctionName(splitRow[1], language, functionId);
                 ensureUploaded(uploadedFunctions, owner, function, language, functionId);
             }
         } catch (IOException e) {
@@ -94,6 +94,21 @@ public class InvocationTraceExecutor {
         } else {
             System.out.println("Warning: executor lags behind the trace by (ms) " + timeDifference);
         }
+    }
+
+    protected String getOwnerName(String ownerFromTrace) {
+        if ("gv-fc".equals(config.executionMode)) {
+            return "user";
+        }
+        return ownerFromTrace;
+    }
+
+    protected String getFunctionName(String functionFromTrace, FunctionLanguage language, int functionId) {
+        if ("gv".equals(config.executionMode) || "gv-fc".equals(config.executionMode)) {
+            // To avoid clashing SVM IDs when collocating different functions.
+            return config.getFunctionConfiguration(language, functionId).functionName;
+        }
+        return functionFromTrace;
     }
 
     public void uploadFunction(String address, String owner, String function, FunctionLanguage language, int functionId) {

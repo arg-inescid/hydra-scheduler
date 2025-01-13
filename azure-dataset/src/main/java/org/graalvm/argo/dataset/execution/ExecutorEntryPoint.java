@@ -15,12 +15,10 @@ public class ExecutorEntryPoint {
         try {
             CommandLine cmd = new DefaultParser().parse(options, args);
             String inputFilePath = cmd.getOptionValue("input");
-            String functionRuntime = cmd.getOptionValue("functionRuntime");
-            String invocationCollocation = cmd.getOptionValue("invocationCollocation");
-            String functionIsolation = cmd.getOptionValue("functionIsolation");
+            String executionMode = cmd.getOptionValue("executionMode");
             boolean debug = cmd.hasOption("debug");
             String lambdaManagerAddress = cmd.getOptionValue("lambdaManagerAddress", "localhost:30009");
-            ExecutorConfiguration config = new ExecutorConfiguration(functionRuntime, invocationCollocation, functionIsolation, debug, lambdaManagerAddress);
+            ExecutorConfiguration config = new ExecutorConfiguration(executionMode, debug, lambdaManagerAddress);
             boolean multiWorker = cmd.hasOption("multiWorker");
             InvocationTraceExecutor executor = multiWorker ? new MultiWorkerInvocationTraceExecutor(config) : new InvocationTraceExecutor(config);
             executor.execute(inputFilePath);
@@ -37,15 +35,9 @@ public class ExecutorEntryPoint {
         Option input = new Option("i", "input", true, "Input invocation trace file path.");
         input.setRequired(true);
         options.addOption(input);
-        Option functionRuntime = new Option("fr", "functionRuntime", true, "Function runtime.");
-        functionRuntime.setRequired(true);
-        options.addOption(functionRuntime);
-        Option invocationCollocation = new Option("ic", "invocationCollocation", true, "Collocation of invocations in a single worker.");
-        invocationCollocation.setRequired(true);
-        options.addOption(invocationCollocation);
-        Option functionIsolation = new Option("fi", "functionIsolation", true, "Isolation of functions across several workers.");
-        functionIsolation.setRequired(true);
-        options.addOption(functionIsolation);
+        Option executionMode = new Option("m", "executionMode", true, "Execution mode.");
+        executionMode.setRequired(true);
+        options.addOption(executionMode);
         Option debug = new Option("d", "debug", false, "Just print requests instead of sending them.");
         debug.setRequired(false);
         options.addOption(debug);

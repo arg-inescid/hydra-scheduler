@@ -47,9 +47,7 @@ FIRST_PORT=50010
 
 function process_dataset {
     csv_file=$1
-    function_runtime=$2
-    invocation_collocation=$3
-    function_isolation=$4
+    execution_mode=$2
 
     azure_executor_jar=$(DIR)/../azure-dataset/build/libs/azure-dataset-1.0-all.jar
     azure_executor_entrypoint=org.graalvm.argo.dataset.execution.ExecutorEntryPoint
@@ -62,9 +60,7 @@ function process_dataset {
     time $JAVA_HOME/bin/java -cp $azure_executor_jar $azure_executor_entrypoint \
         --input $csv_file \
         --lambdaManagerAddress $LAMBDA_MANAGER_ADDRESS \
-        --functionRuntime $function_runtime \
-        --invocationCollocation $invocation_collocation \
-        --functionIsolation $function_isolation $multi_worker_option &> $EXECUTOR_LOG_FILE
+        --executionMode $execution_mode $multi_worker_option &> $EXECUTOR_LOG_FILE
 
     sleep 10
     echo "Finished benchmark execution. Stopping the lambda manager..."
@@ -83,29 +79,17 @@ LAMBDA_MANAGER_VARIABLES="$ARGO_HOME/run/configs/manager/default-variables.json"
 
 
 if [[ "$MODE" = "gv" ]]; then
-    FUNCTION_RUNTIME=graalvisor
-    FUNCTION_ISOLATION=false
-    INVOCATION_COLLOCATION=true
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/gv-lm.json"
+elif [[ "$MODE" = "gv-fc" ]]; then
     LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/gv-lm.json"
 elif [[ "$MODE" = "gv-sf" ]]; then
-    FUNCTION_RUNTIME=graalvisor
-    FUNCTION_ISOLATION=true
-    INVOCATION_COLLOCATION=true
     LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/gv-lm.json"
 elif [[ "$MODE" = "gv-si" ]]; then
-    FUNCTION_RUNTIME=graalvisor
-    FUNCTION_ISOLATION=true
-    INVOCATION_COLLOCATION=false
     LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/gv-si-lm.json"
 elif [[ "$MODE" = "ow" ]]; then
-    FUNCTION_RUNTIME=openwhisk
-    FUNCTION_ISOLATION=true
-    INVOCATION_COLLOCATION=false
     LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/ow-lm.json"
 elif [[ "$MODE" = "gos" ]]; then
-    FUNCTION_RUNTIME=graalos
-    FUNCTION_ISOLATION=true
-    INVOCATION_COLLOCATION=false
+    echo "Running GraalOS experiment."
 else
     echo "Syntax: <mode> </path/to/dataset/directory> <executor-type>"
 	exit 1
@@ -135,7 +119,7 @@ fi
 sleep 10
 
 # Run the trace
-process_dataset $DATASET_FILE $FUNCTION_RUNTIME $INVOCATION_COLLOCATION $FUNCTION_ISOLATION
+process_dataset $DATASET_FILE $MODE
 
 # Terminate fake workers
 if [[ "$EXECUTOR_TYPE" = "--multi" ]]; then

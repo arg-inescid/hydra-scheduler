@@ -8,6 +8,10 @@ import java.util.Map;
 
 public class ExecutorConfiguration {
 
+    final String executionMode;
+    /**
+     * Can be "graalvisor", "openwhisk", or "graalos".
+     */
     final String functionRuntime;
     public final String invocationCollocation;
     public final String functionIsolation;
@@ -19,10 +23,11 @@ public class ExecutorConfiguration {
 
     private final Map<FunctionLanguage, FunctionConfiguration[]> functionConfigs;
 
-    ExecutorConfiguration(String functionRuntime, String invocationCollocation, String functionIsolation, boolean debug, String lambdaManagerAddress) {
-        this.functionRuntime = functionRuntime;
-        this.invocationCollocation = invocationCollocation;
-        this.functionIsolation = functionIsolation;
+    ExecutorConfiguration(String executionMode, boolean debug, String lambdaManagerAddress) {
+        this.executionMode = executionMode;
+        this.functionRuntime = getFunctionRuntime(executionMode);
+        this.invocationCollocation = getInvocationCollocation(executionMode);
+        this.functionIsolation = getFunctionIsolation(executionMode);
         this.debug = debug;
         this.lambdaManagerAddress = lambdaManagerAddress;
         this.functionConfigs = new HashMap<>();
@@ -121,5 +126,30 @@ public class ExecutorConfiguration {
             this.gvSandbox = gvSandbox;
             this.svmId = svmId;
         }
+    }
+
+    private String getFunctionRuntime(String executionMode) {
+        if ("gv".equals(executionMode) || "gv-sf".equals(executionMode) || "gv-si".equals(executionMode) || "gv-fc".equals(executionMode)) {
+            return "graalvisor";
+        } else if ("ow".equals(executionMode)) {
+            return "openwhisk";
+        } else if ("gos".equals(executionMode)) {
+            return "graalos";
+        }
+        throw new IllegalArgumentException("Unsupported execution mode: " + executionMode);
+    }
+
+    private String getInvocationCollocation(String executionMode) {
+        if ("gv".equals(executionMode) || "gv-sf".equals(executionMode) || "gv-fc".equals(executionMode)) {
+            return "true";
+        }
+        return "false";
+    }
+
+    private String getFunctionIsolation(String executionMode) {
+        if ("gv".equals(executionMode) || "gv-fc".equals(executionMode)) {
+            return "false";
+        }
+        return "true";
     }
 }

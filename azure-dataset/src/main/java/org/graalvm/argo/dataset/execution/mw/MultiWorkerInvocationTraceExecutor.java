@@ -96,11 +96,11 @@ public class MultiWorkerInvocationTraceExecutor extends InvocationTraceExecutor 
             while ((line = br.readLine()) != null) {
                 beforeTmp = System.nanoTime();
                 splitRow = line.split(InvocationTraceGenerator.DELIMITER);
-                String owner = splitRow[0];
+                String owner = getOwnerName(splitRow[0]);
                 int timestamp = Integer.parseInt(splitRow[4]);
                 FunctionLanguage language = FunctionLanguage.fromString(splitRow[5]);
                 int functionId = Integer.parseInt(splitRow[6]);
-                String function = config.getFunctionConfiguration(language, functionId).functionName;
+                String function = getFunctionName(splitRow[1], language, functionId);
                 int functionMemory = config.getFunctionConfiguration(language, functionId).memory;
                 int duration = config.getFunctionConfiguration(language, functionId).duration;
                 timeInRead += (System.nanoTime() - beforeTmp);
