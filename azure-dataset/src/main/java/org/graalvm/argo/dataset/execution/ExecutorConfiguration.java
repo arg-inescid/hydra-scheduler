@@ -133,7 +133,7 @@ public class ExecutorConfiguration {
             return "graalvisor";
         } else if ("ow".equals(executionMode)) {
             return "openwhisk";
-        } else if ("gos".equals(executionMode)) {
+        } else if ("gos".equals(executionMode) || "gos-native".equals(executionMode)) {
             return "graalos";
         }
         throw new IllegalArgumentException("Unsupported execution mode: " + executionMode);

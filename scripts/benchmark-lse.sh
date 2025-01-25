@@ -85,11 +85,13 @@ elif [[ "$MODE" = "gv-fc" ]]; then
 elif [[ "$MODE" = "gv-sf" ]]; then
     LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/gv-lm.json"
 elif [[ "$MODE" = "gv-si" ]]; then
-    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/gv-si-lm.json"
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/gv-lm.json"
 elif [[ "$MODE" = "ow" ]]; then
     LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/ow-lm.json"
 elif [[ "$MODE" = "gos" ]]; then
-    echo "Running GraalOS experiment."
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/gos-lm.json"
+elif [[ "$MODE" = "gos-native" ]]; then
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/gos-native-lm.json"
 else
     echo "Syntax: <mode> </path/to/dataset/directory> <executor-type>"
 	exit 1
