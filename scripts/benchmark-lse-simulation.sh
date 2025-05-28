@@ -23,53 +23,32 @@ FIRST_PORT=50010
 
 function process_dataset {
     csv_file=$1
-    function_runtime=$2
-    invocation_collocation=$3
-    function_isolation=$4
+    execution_mode=$2
 
     AZURE_EXECUTOR_JAR=$(DIR)/../azure-dataset/build/libs/azure-dataset-1.0-all.jar
     AZURE_EXECUTOR_ENTRYPOINT=org.graalvm.argo.dataset.execution.ExecutorEntryPoint
 
     time $JAVA_HOME/bin/java -cp $AZURE_EXECUTOR_JAR $AZURE_EXECUTOR_ENTRYPOINT \
         --input $csv_file \
-        --functionRuntime $function_runtime \
-        --invocationCollocation $invocation_collocation \
-        --functionIsolation $function_isolation \
+        --executionMode $execution_mode \
         --multiWorker > /tmp/lse_executor.log
 
     sleep 10
     echo "Finished benchmark execution."
 }
 
-MODE=$1
-DATASET_FILE=$2
-
-
-if [[ "$MODE" = "gv" ]]; then
-    FUNCTION_RUNTIME=graalvisor
-    FUNCTION_ISOLATION=false
-    INVOCATION_COLLOCATION=true
-elif [[ "$MODE" = "gv-sf" ]]; then
-    FUNCTION_RUNTIME=graalvisor
-    FUNCTION_ISOLATION=true
-    INVOCATION_COLLOCATION=true
-elif [[ "$MODE" = "gv-si" ]]; then
-    FUNCTION_RUNTIME=graalvisor
-    FUNCTION_ISOLATION=true
-    INVOCATION_COLLOCATION=false
-elif [[ "$MODE" = "ow" ]]; then
-    FUNCTION_RUNTIME=openwhisk
-    FUNCTION_ISOLATION=true
-    INVOCATION_COLLOCATION=false
-else
+if [ "$#" -ne 2 ]; then
     echo "Syntax: <mode> </path/to/dataset/directory>"
-	exit 1
+    exit 1
+else
+    MODE=$1
+    DATASET_FILE=$2
 fi
 
 bash $(DIR)/../fake-worker/deploy-swarm.sh $WORKER_COUNT $FIRST_PORT
 
 sleep 1
 
-process_dataset $DATASET_FILE $FUNCTION_RUNTIME $INVOCATION_COLLOCATION $FUNCTION_ISOLATION
+process_dataset $DATASET_FILE $MODE
 
 bash $(DIR)/../fake-worker/cleanup-swarm.sh

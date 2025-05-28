@@ -81,6 +81,7 @@ public class MultiWorkerInvocationTraceExecutor extends InvocationTraceExecutor 
         }
     }
 
+    // HashOwner,HashFunction,AverageAllocatedMb,AverageDuration,Timestamp,Language,BenchmarkName
     @Override
     public void execute(String invocationsFilePath) {
         try (BufferedReader br = new BufferedReader(new FileReader(invocationsFilePath))) {
@@ -98,11 +99,11 @@ public class MultiWorkerInvocationTraceExecutor extends InvocationTraceExecutor 
                 splitRow = line.split(InvocationTraceGenerator.DELIMITER);
                 String owner = getOwnerName(splitRow[0]);
                 int timestamp = Integer.parseInt(splitRow[4]);
-                FunctionLanguage language = FunctionLanguage.fromString(splitRow[5]);
-                int functionId = Integer.parseInt(splitRow[6]);
-                String function = getFunctionName(splitRow[1], language, functionId);
-                int functionMemory = config.getFunctionConfiguration(language, functionId).memory;
-                int duration = config.getFunctionConfiguration(language, functionId).duration;
+                String benchmarkName = splitRow[6];
+
+                String function = getFunctionName(splitRow[1], benchmarkName);
+                int functionMemory = config.getBenchmarkConfiguration(benchmarkName).memory;
+                int duration = config.getBenchmarkConfiguration(benchmarkName).duration;
                 timeInRead += (System.nanoTime() - beforeTmp);
 
                 beforeTmp = System.nanoTime();
@@ -111,7 +112,7 @@ public class MultiWorkerInvocationTraceExecutor extends InvocationTraceExecutor 
 
                 if (worker != null) {
                     beforeTmp = System.nanoTime();
-                    worker.ensureUploaded(owner, function, language, functionId);
+                    worker.ensureUploaded(owner, function, benchmarkName);
                     timeInEnsureUploaded += (System.nanoTime() - beforeTmp);
                 }
 
@@ -127,7 +128,7 @@ public class MultiWorkerInvocationTraceExecutor extends InvocationTraceExecutor 
 
                 if (worker != null) {
                     beforeTmp = System.nanoTime();
-                    worker.acceptFunctionInvocation(owner, function, functionMemory, duration, timestamp, language, functionId);
+                    worker.acceptFunctionInvocation(owner, function, functionMemory, duration, timestamp, benchmarkName);
                     timeInRequest += (System.nanoTime() - beforeTmp);
                 }
 //                beforeTmp = System.nanoTime();

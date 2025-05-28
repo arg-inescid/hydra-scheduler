@@ -19,7 +19,7 @@ public class FakeWorker extends AbstractWorker {
     }
 
     @Override
-    public void ensureUploaded(String owner, String function, FunctionLanguage language, int functionId) {
+    public void ensureUploaded(String owner, String function, String benchmarkName) {
         if (!functions.contains(owner + "_" + function)) {
             owners.add(owner);
             functions.add(owner + "_" + function);
@@ -27,7 +27,7 @@ public class FakeWorker extends AbstractWorker {
     }
 
     @Override
-    public void acceptFunctionInvocation(String owner, String function, int functionMemory, int duration, int timestamp, FunctionLanguage language, int functionId) {
+    public void acceptFunctionInvocation(String owner, String function, int functionMemory, int duration, int timestamp, String benchmarkName) {
         memoryManager.startRequest(owner, function, functionMemory);
         int invocationFinishTimestamp = timestamp + duration;
         scheduledTasks.computeIfAbsent(invocationFinishTimestamp, k -> new LinkedList<>());

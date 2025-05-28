@@ -17,18 +17,18 @@ public class PhysicalFakeWorker extends AbstractWorker {
     }
 
     @Override
-    public void ensureUploaded(String owner, String function, FunctionLanguage language, int functionId) {
+    public void ensureUploaded(String owner, String function, String benchmarkName) {
         if (!functions.contains(owner + "_" + function)) {
-            executor.uploadFunction(address, owner, function, language, functionId);
+            executor.uploadFunction(address, owner, function, benchmarkName);
             owners.add(owner);
             functions.add(owner + "_" + function);
         }
     }
 
     @Override
-    public void acceptFunctionInvocation(String owner, String function, int functionMemory, int duration, int timestamp, FunctionLanguage language, int functionId) {
+    public void acceptFunctionInvocation(String owner, String function, int functionMemory, int duration, int timestamp, String benchmarkName) {
         memoryManager.startRequest(owner, function, functionMemory);
-        executor.invokeFunction(address, owner, function, timestamp, duration, language, functionId, new InvocationCallback(this, owner, function, duration));
+        executor.invokeFunction(address, owner, function, timestamp, duration, benchmarkName, new InvocationCallback(this, owner, function, duration));
         ++totalRequests;
     }
 

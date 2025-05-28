@@ -1,0 +1,89 @@
+{
+  "pyhw" : {
+    "language" : "python",
+    "benchmarkName" : "pyhw",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/python/cr-hello-world/init.json",
+    "entryPoint" : "main",
+    "payload" : "{ }",
+    "memory"  : 1024,
+    "duration" : 4
+  },
+  "pyup" : {
+    "language" : "python",
+    "benchmarkName" : "pyup",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/python/cr-uploader/init.json",
+    "entryPoint" : "main",
+    "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
+    "memory"  : 1024,
+    "duration" : 7
+  },
+  "pyco" : {
+    "language" : "python",
+    "benchmarkName" : "pyco",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/python/cr-compression/init.json",
+    "entryPoint" : "main",
+    "payload" : "{\"url\":\"http://172.18.0.1:8000/video.mp4\"}",
+    "memory"  : 1024,
+    "duration" : 99
+  },
+
+
+
+  "jshw" : {
+    "language" : "js",
+    "benchmarkName" : "jshw",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/javascript/cr-hello-world/init.json",
+    "entryPoint" : "main",
+    "payload" : "{ }",
+    "memory"  : 1024,
+    "duration" : 4
+  },
+  "jsup" : {
+    "language" : "js",
+    "benchmarkName" : "jsup",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/javascript/cr-uploader/init.json",
+    "entryPoint" : "main",
+    "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
+    "memory"  : 1024,
+    "duration" : 10
+  },
+  "jsdh" : {
+    "language" : "js",
+    "benchmarkName" : "jsdh",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/javascript/cr-dynamic-html/init.json",
+    "entryPoint" : "main",
+    "payload" : "{\"url\":\"http://172.18.0.1:8000/template.html\",\"username\":\"rbruno\",\"nsize\":\"10\"}",
+    "memory"  : 1024,
+    "duration" : 7
+  },
+
+
+
+  "jvhw" : {
+    "language" : "java",
+    "benchmarkName" : "jvhw",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/java/cr-hello-world/init.json",
+    "entryPoint" : "Hello",
+    "payload" : "{\"name\":\"rbruno\"}",
+    "memory"  : 1024,
+    "duration" : 5
+  },
+  "jvfh" : {
+    "language" : "java",
+    "benchmarkName" : "jvfh",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/java/cr-file-hashing/init.json",
+    "entryPoint" : "Main",
+    "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
+    "memory"  : 1024,
+    "duration" : 6
+  },
+  "jvhr" : {
+    "language" : "java",
+    "benchmarkName" : "jvhr",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/java/cr-httprequest/init.json",
+    "entryPoint" : "Main",
+    "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
+    "memory"  : 1024,
+    "duration" : 6
+  }
+}

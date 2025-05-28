@@ -23,9 +23,9 @@ public abstract class AbstractWorker {
         this.memoryManager = memoryManager;
     }
 
-    public abstract void ensureUploaded(String owner, String function, FunctionLanguage language, int functionId);
+    public abstract void ensureUploaded(String owner, String function, String benchmarkName);
 
-    public abstract void acceptFunctionInvocation(String owner, String function, int allocatedMemoryMb, int duration, int timestamp, FunctionLanguage language, int functionId) throws IOException;
+    public abstract void acceptFunctionInvocation(String owner, String function, int allocatedMemoryMb, int duration, int timestamp, String benchmarkName) throws IOException;
 
     public boolean hasFunctionRegistered(String owner, String function) {
         return functions.contains(owner + "_" + function);

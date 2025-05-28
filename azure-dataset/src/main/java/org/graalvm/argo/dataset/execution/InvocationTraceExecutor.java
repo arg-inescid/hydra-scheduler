@@ -1,5 +1,7 @@
 package org.graalvm.argo.dataset.execution;
 
+import org.graalvm.argo.dataset.execution.utils.Benchmark;
+import org.graalvm.argo.dataset.execution.utils.FunctionRuntime;
 import org.graalvm.argo.dataset.generator.InvocationTraceGenerator;
 import org.graalvm.argo.dataset.multilang.FunctionLanguage;
 import org.graalvm.argo.dataset.utils.network.SocketNetworkUtils;
@@ -13,14 +15,14 @@ import java.util.function.Consumer;
 
 public class InvocationTraceExecutor {
 
-    protected final ExecutorConfiguration config;
+    public final ExecutorConfiguration config;
 
 
     public InvocationTraceExecutor(ExecutorConfiguration config) {
         this.config = config;
     }
 
-    // HashOwner,HashFunction,AverageAllocatedMb,AverageDuration,Timestamp
+    // HashOwner,HashFunction,AverageAllocatedMb,AverageDuration,Timestamp,Language,BenchmarkName
     public void execute(String invocationsFilePath) {
         uploadFunctions(invocationsFilePath);
         try (BufferedReader br = new BufferedReader(new FileReader(invocationsFilePath))) {
@@ -35,10 +37,9 @@ public class InvocationTraceExecutor {
                 splitRow = line.split(InvocationTraceGenerator.DELIMITER);
                 String owner = getOwnerName(splitRow[0]);
                 int timestamp = Integer.parseInt(splitRow[4]);
-                FunctionLanguage language = FunctionLanguage.fromString(splitRow[5]);
-                int functionId = Integer.parseInt(splitRow[6]);
-                int duration = config.getFunctionConfiguration(language, functionId).duration;
-                String function = getFunctionName(splitRow[1], language, functionId);
+                String benchmarkName = splitRow[6];
+                int duration = config.getBenchmarkConfiguration(benchmarkName).duration;
+                String function = getFunctionName(splitRow[1], benchmarkName);
 
                 /* Periodically check if we need to slow down the executor. */
                 if ((timestamp - lastCheckedTimestamp) >= Environment.WAIT_PERIOD_MS) {
@@ -48,7 +49,7 @@ public class InvocationTraceExecutor {
                     SocketNetworkUtils.readAllAvailable();
                 }
 
-                invokeFunction(config.getLambdaManagerAddress(), owner, function, timestamp, duration, language, functionId, System.out::println);
+                invokeFunction(config.getLambdaManagerAddress(), owner, function, timestamp, duration, benchmarkName, System.out::println);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -65,19 +66,18 @@ public class InvocationTraceExecutor {
             while ((line = br.readLine()) != null) {
                 splitRow = line.split(InvocationTraceGenerator.DELIMITER);
                 String owner = getOwnerName(splitRow[0]);
-                FunctionLanguage language = FunctionLanguage.fromString(splitRow[5]);
-                int functionId = Integer.parseInt(splitRow[6]);
-                String function = getFunctionName(splitRow[1], language, functionId);
-                ensureUploaded(uploadedFunctions, owner, function, language, functionId);
+                String benchmarkName = splitRow[6];
+                String function = getFunctionName(splitRow[1], benchmarkName);
+                ensureUploaded(uploadedFunctions, owner, function, benchmarkName);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    protected void ensureUploaded(Set<String> uploadedFunctions, String owner, String function, FunctionLanguage language, int functionId) {
+    protected void ensureUploaded(Set<String> uploadedFunctions, String owner, String function, String benchmarkName) {
         if (!uploadedFunctions.contains(owner + "_" + function)) {
-            uploadFunction(config.getLambdaManagerAddress(), owner, function, language, functionId);
+            uploadFunction(config.getLambdaManagerAddress(), owner, function, benchmarkName);
             uploadedFunctions.add(owner + "_" + function);
         }
     }
@@ -103,44 +103,46 @@ public class InvocationTraceExecutor {
         return ownerFromTrace;
     }
 
-    protected String getFunctionName(String functionFromTrace, FunctionLanguage language, int functionId) {
+    protected String getFunctionName(String functionFromTrace, String benchmarkName) {
         if ("gv".equals(config.executionMode) || "gv-fc".equals(config.executionMode)) {
             // To avoid clashing SVM IDs when collocating different functions.
-            return config.getFunctionConfiguration(language, functionId).functionName;
+            return benchmarkName;
         }
         return functionFromTrace;
     }
 
-    public void uploadFunction(String address, String owner, String function, FunctionLanguage language, int functionId) {
-        ExecutorConfiguration.FunctionConfiguration functionConfig = config.getFunctionConfiguration(language, functionId);
+    public void uploadFunction(String address, String owner, String function, String benchmarkName) {
+        Benchmark benchmarkConfig = config.getBenchmarkConfiguration(benchmarkName);
+        FunctionLanguage functionLanguage = FunctionLanguage.fromString(benchmarkConfig.language);
+
         // Graalvisor Python/JavaScript benchmarks have Java wrappers.
-        FunctionLanguage actualLanguage = Environment.GRAALVISOR_RUNTIME.equals(config.functionRuntime) ? FunctionLanguage.JAVA : language;
+        FunctionLanguage actualLanguage = config.functionRuntime == FunctionRuntime.GRAALVISOR ? FunctionLanguage.JAVA : functionLanguage;
         String message = "u username=" + owner + " function_name=" + function +
-                " function_language=" + actualLanguage + " function_entry_point=" + functionConfig.entryPoint +
-                " function_memory=" + functionConfig.memory + " function_runtime=" + config.functionRuntime +
+                " function_language=" + actualLanguage + " function_entry_point=" + benchmarkConfig.entryPoint +
+                " function_memory=" + benchmarkConfig.memory + " function_runtime=" + config.functionRuntime.toString() +
                 " function_isolation=" + config.functionIsolation + " invocation_collocation=" + config.invocationCollocation;
-        if (functionConfig.gvSandbox != null) {
-            message = message + " gv_sandbox=" + functionConfig.gvSandbox;
+        if (benchmarkConfig.gvSandbox != null) {
+            message = message + " gv_sandbox=" + benchmarkConfig.gvSandbox;
             // For Python/JS functions that need sandbox snapshotting.
-            if ("snapshot".equals(functionConfig.gvSandbox) && functionConfig.svmId != null) {
-                message = message + " svm_id=" + functionConfig.svmId;
+            if ("snapshot".equals(benchmarkConfig.gvSandbox) && benchmarkConfig.svmId != null) {
+                message = message + " svm_id=" + benchmarkConfig.svmId;
             }
         }
         // Append path to the function as payload in ''.
-        message = message + " '" + functionConfig.code + "'";
+        message = message + " '" + benchmarkConfig.code + "'";
         if (!config.isDebugMode()) {
             SocketNetworkUtils.send(address, message, true, (s) -> {});
         }
     }
 
-    public void invokeFunction(String address, String owner, String function, int timestamp, int duration, FunctionLanguage language, int functionId, Consumer<String> asyncConsumer) {
+    public void invokeFunction(String address, String owner, String function, int timestamp, int duration, String benchmarkName, Consumer<String> asyncConsumer) {
         if (config.isDebugMode()) {
             System.out.println("Sending request with timestamp: " + timestamp);
         } else {
-            ExecutorConfiguration.FunctionConfiguration functionConfig = config.getFunctionConfiguration(language, functionId);
+            Benchmark benchmarkConfig = config.getBenchmarkConfiguration(benchmarkName);
             String message = "i username=" + owner + " function_name=" + function +
                     " request_duration=" + duration +
-                    " '" + functionConfig.payload + "'"; // Append invocation parameters as payload in ''.
+                    " '" + benchmarkConfig.payload + "'"; // Append invocation parameters as payload in ''.
             SocketNetworkUtils.send(address, message, true, asyncConsumer);
         }
     }
