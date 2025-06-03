@@ -20,20 +20,14 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.SplittableRandom;
 import java.util.stream.Collectors;
 
 public class LanguageRandomizer {
 
     // Source: https://newrelic.com/resources/report/serverless-benchmark-report-aws-lambda-2020
     private static final int JAVASCRIPT_PERC = 48; // 54
-    private static final int JAVASCRIPT_FUNC = 3;
     private static final int PYTHON_PERC = 24;     // 38
-    private static final int PYTHON_FUNC = 3;
     private static final int JAVA_PERC = 28;       // 8
-    private static final int JAVA_FUNC = 3;
-
-    private static final SplittableRandom random = new SplittableRandom();
 
     public static void main(String[] args) {
         Options options = prepareOptions();
@@ -41,7 +35,8 @@ public class LanguageRandomizer {
             CommandLine cmd = new DefaultParser().parse(options, args);
             String inputFilePath = cmd.getOptionValue("input");
             String outputFilePath = cmd.getOptionValue("trace", inputFilePath);
-            processLanguages(inputFilePath, outputFilePath);
+            boolean mappings = cmd.hasOption("mappings");
+            processLanguages(inputFilePath, outputFilePath, mappings);
         } catch (ParseException e) {
             System.out.println(e.getMessage());
             new HelpFormatter().printHelp("utility-name", options);
@@ -50,15 +45,32 @@ public class LanguageRandomizer {
         }
     }
 
-    private static void processLanguages(String inputFilePath, String outputFilePath) {
+    private static void processLanguages(String inputFilePath, String outputFilePath, boolean mappings) {
         List<Invocation> invocations = getInvocations(inputFilePath);
         Map<String, FunctionRecord> languagesFunction = getLanguages(invocations);
-        writeInvocationsToFile(invocations, languagesFunction, outputFilePath);
+        if (mappings) {
+            writeMappingsToFile(languagesFunction, outputFilePath);
+        } else {
+            writeInvocationsToFile(invocations, languagesFunction, outputFilePath);
+        }
+    }
+
+    private static void writeMappingsToFile(Map<String, FunctionRecord> languagesFunction, String outputFilePath) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath, false))) {
+            writer.write("HashFunction,Benchmark");
+            writer.newLine();
+            for (Map.Entry<String, FunctionRecord> entry : languagesFunction.entrySet()) {
+                writer.write(String.format("%s,%s", entry.getKey(), entry.getValue().benchmarkName));
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static void writeInvocationsToFile(List<Invocation> invocations, Map<String, FunctionRecord> languagesFunction, String outputFilePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath, false))) {
-            writer.write("HashOwner,HashFunction,AverageAllocatedMb,AverageDuration,Timestamp,Language,Function");
+            writer.write("HashOwner,HashFunction,AverageAllocatedMb,AverageDuration,Timestamp,Language,Benchmark");
             writer.newLine();
             for (Invocation invocation : invocations) {
                 writer.write(String.format("%s,%s", invocation.toString(), languagesFunction.get(invocation.getFunction()).toString()));
@@ -73,9 +85,14 @@ public class LanguageRandomizer {
         int invocationsNumber = invocations.size();
         Map<String, FunctionRecord> result = new HashMap<>();
 
-        Map<String, Long> invocationsFunction = invocations.stream()
+        // Extracting the mapping Function->Duration.
+        Map<String, Integer> functionDurations = invocations.stream()
+                .collect(Collectors.toMap(Invocation::getFunction, Invocation::getDuration, (existing, replacement) -> existing));
+
+        // Extracting the mapping Function->InvocationCount.
+        Map<String, Long> functionInvocations = invocations.stream()
                 .collect(Collectors.groupingBy(Invocation::getFunction, Collectors.counting()));
-        List<Map.Entry<String, Long>> functionsList = new ArrayList<>(invocationsFunction.entrySet());
+        List<Map.Entry<String, Long>> functionsList = new ArrayList<>(functionInvocations.entrySet());
         Collections.shuffle(functionsList);
 
         int currentInvocationsNumber = 0;
@@ -84,16 +101,20 @@ public class LanguageRandomizer {
         int jvThreshold = (int) (invocationsNumber * ((double) JAVA_PERC / 100)) + pyThreshold;
         for (Map.Entry<String, Long> functionEntry : functionsList) {
             currentInvocationsNumber += functionEntry.getValue();
+            int duration = functionDurations.get(functionEntry.getKey());
+
+            FunctionLanguage language;
             if (currentInvocationsNumber <= jsThreshold) {
-                FunctionRecord record = new FunctionRecord(FunctionLanguage.JAVASCRIPT, random.nextInt(JAVASCRIPT_FUNC));
-                result.put(functionEntry.getKey(), record);
+                language = FunctionLanguage.JAVASCRIPT;
             } else if (currentInvocationsNumber <= pyThreshold) {
-                FunctionRecord record = new FunctionRecord(FunctionLanguage.PYTHON, random.nextInt(PYTHON_FUNC));
-                result.put(functionEntry.getKey(), record);
+                language = FunctionLanguage.PYTHON;
             } else {
-                FunctionRecord record = new FunctionRecord(FunctionLanguage.JAVA, random.nextInt(JAVA_FUNC));
-                result.put(functionEntry.getKey(), record);
+                language = FunctionLanguage.JAVA;
             }
+
+            String benchmarkName = BenchmarkDuration.getBenchmark(language, duration);
+            FunctionRecord record = new FunctionRecord(language, benchmarkName);
+            result.put(functionEntry.getKey(), record);
         }
         printStatistics(invocationsNumber, result);
         return result;
@@ -139,6 +160,9 @@ public class LanguageRandomizer {
         Option output = new Option("t", "trace", true, "Output invocation trace file path.");
         output.setRequired(true);
         options.addOption(output);
+        Option mappings = new Option("m", "mappings", false, "Write just mappings func->bench without writing the output invocation trace file.");
+        mappings.setRequired(false);
+        options.addOption(mappings);
         return options;
     }
 }

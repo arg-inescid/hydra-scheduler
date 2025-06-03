@@ -1,83 +1,11 @@
 {
-  "pyhw" : {
-    "language" : "python",
-    "benchmarkName" : "pyhw",
-    "code" : "http://172.18.0.1:8000/apps/gv-py-hello-world.so",
-    "entryPoint" : "com.helloworld.HelloWorld",
-    "payload" : "{ }",
-    "memory"  : 1024,
-    "duration" : 4,
-    "gvSandbox" : "snapshot",
-    "svmId" : "4"
-  },
-  "pyup" : {
-    "language" : "python",
-    "benchmarkName" : "pyup",
-    "code" : "http://172.18.0.1:8000/apps/gv-py-uploader.so",
-    "entryPoint" : "com.uploader.Uploader",
-    "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
-    "memory"  : 1024,
-    "duration" : 7,
-    "gvSandbox" : "snapshot",
-    "svmId" : "5"
-  },
-  "pyco" : {
-    "language" : "python",
-    "benchmarkName" : "pyco",
-    "code" : "http://172.18.0.1:8000/apps/gv-py-compression.so",
-    "entryPoint" : "com.compression.Compression",
-    "payload" : "{\"url\":\"http://172.18.0.1:8000/video.mp4\"}",
-    "memory"  : 1024,
-    "duration" : 99,
-    "gvSandbox" : "snapshot",
-    "svmId" : "6"
-  },
-
-
-
-  "jshw" : {
-    "language" : "js",
-    "benchmarkName" : "jshw",
-    "code" : "http://172.18.0.1:8000/apps/gv-js-hello-world.so",
-    "entryPoint" : "com.helloworld.HelloWorld",
-    "payload" : "{ }",
-    "memory"  : 1024,
-    "duration" : 4,
-    "gvSandbox" : "snapshot",
-    "svmId" : "1"
-  },
-  "jsup" : {
-    "language" : "js",
-    "benchmarkName" : "jsup",
-    "code" : "http://172.18.0.1:8000/apps/gv-js-uploader.so",
-    "entryPoint" : "com.uploader.Uploader",
-    "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
-    "memory"  : 1024,
-    "duration" : 10,
-    "gvSandbox" : "snapshot",
-    "svmId" : "2"
-  },
-  "jsdh" : {
-    "language" : "js",
-    "benchmarkName" : "jsdh",
-    "code" : "http://172.18.0.1:8000/apps/gv-js-dynamic-html.so",
-    "entryPoint" : "com.dynamichtml.DynamicHTML",
-    "payload" : "{\"url\":\"http://172.18.0.1:8000/template.html\",\"username\":\"rbruno\",\"nsize\":\"10\"}",
-    "memory"  : 1024,
-    "duration" : 7,
-    "gvSandbox" : "snapshot",
-    "svmId" : "3"
-  },
-
-
-
   "jvhw" : {
     "language" : "java",
     "benchmarkName" : "jvhw",
     "code" : "http://172.18.0.1:8000/apps/gv-jv-hello-world.so",
     "entryPoint" : "com.hello_world.HelloWorld",
     "payload" : "{\"name\":\"rbruno\"}",
-    "memory"  : 1024,
+    "memory"  : 256,
     "duration" : 5,
     "gvSandbox" : "isolate"
   },
@@ -87,8 +15,18 @@
     "code" : "http://172.18.0.1:8000/apps/gv-jv-file-hashing.so",
     "entryPoint" : "com.filehashing.FileHashing",
     "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
-    "memory"  : 1024,
-    "duration" : 6,
+    "memory"  : 256,
+    "duration" : 8,
+    "gvSandbox" : "isolate"
+  },
+  "jvcl" : {
+    "language" : "java",
+    "benchmarkName" : "jvcl",
+    "code" : "http://172.18.0.1:8000/apps/gv-jv-classify.so",
+    "entryPoint" : "com.classify.Classify",
+    "payload" : "{\"model_url\":\"http://172.18.0.1:8000/tensorflow_inception_graph.pb\",\"labels_url\":\"http://172.18.0.1:8000/imagenet_comp_graph_label_strings.txt\",\"image_url\":\"http://172.18.0.1:8000/eagle.jpg\"}",
+    "memory"  : 2048,
+    "duration" : 4430,
     "gvSandbox" : "isolate"
   },
   "jvhr" : {
@@ -97,8 +35,178 @@
     "code" : "http://172.18.0.1:8000/apps/gv-jv-httprequest.so",
     "entryPoint" : "com.httprequest.HttpRequest",
     "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
-    "memory"  : 1024,
-    "duration" : 6,
+    "memory"  : 256,
+    "duration" : 7,
     "gvSandbox" : "isolate"
+  },
+  "jvvp" : {
+    "language" : "java",
+    "benchmarkName" : "jvvp",
+    "code" : "http://172.18.0.1:8000/apps/gv-jv-video-processing.so",
+    "entryPoint" : "com.videoprocessing.VideoProcessing",
+    "payload" : "{\"video\":\"http://172.18.0.1:8000/video.mp4\",\"ffmpeg\":\"http://172.18.0.1:8000/ffmpeg\"}",
+    "memory"  : 2048,
+    "duration" : 25175,
+    "gvSandbox" : "isolate"
+  },
+
+
+
+  "pyhw" : {
+    "language" : "python",
+    "benchmarkName" : "pyhw",
+    "code" : "http://172.18.0.1:8000/apps/gv-py-hello-world.so",
+    "entryPoint" : "com.helloworld.HelloWorld",
+    "payload" : "{\"name\":\"rbruno\"}",
+    "memory"  : 256,
+    "duration" : 5,
+    "gvSandbox" : "snapshot",
+    "svmId" : "5"
+  },
+  "pyms" : {
+    "language" : "python",
+    "benchmarkName" : "pyms",
+    "code" : "http://172.18.0.1:8000/apps/gv-py-mst.so",
+    "entryPoint" : "com.mst.MST",
+    "payload" : "{\"size\":\"100\"}",
+    "memory"  : 256,
+    "duration" : 12,
+    "gvSandbox" : "snapshot",
+    "svmId" : "6"
+  },
+  "pybf" : {
+    "language" : "python",
+    "benchmarkName" : "pybf",
+    "code" : "http://172.18.0.1:8000/apps/gv-py-bfs.so",
+    "entryPoint" : "com.bfs.BFS",
+    "payload" : "{\"size\":\"100\"}",
+    "memory"  : 256,
+    "duration" : 10,
+    "gvSandbox" : "snapshot",
+    "svmId" : "7"
+  },
+  "pypr" : {
+    "language" : "python",
+    "benchmarkName" : "pypr",
+    "code" : "http://172.18.0.1:8000/apps/gv-py-pagerank.so",
+    "entryPoint" : "com.pr.PageRank",
+    "payload" : "{\"size\":\"10\"}",
+    "memory"  : 256,
+    "duration" : 12,
+    "gvSandbox" : "snapshot",
+    "svmId" : "8"
+  },
+  "pydn" : {
+    "language" : "python",
+    "benchmarkName" : "pydn",
+    "code" : "http://172.18.0.1:8000/apps/gv-py-dna.so",
+    "entryPoint" : "com.dna.DNA",
+    "payload" : "{\"fasta_url\":\"http://172.18.0.1:8000/bacillus_subtilis.fasta\"}",
+    "memory"  : 256,
+    "duration" : 32,
+    "gvSandbox" : "snapshot",
+    "svmId" : "9"
+  },
+  "pydh" : {
+    "language" : "python",
+    "benchmarkName" : "pydh",
+    "code" : "http://172.18.0.1:8000/apps/gv-py-dynamic-html.so",
+    "entryPoint" : "com.dynamichtml.DynamicHTML",
+    "payload" : "{\"url\":\"http://172.18.0.1:8000/template.html\",\"username\":\"rbruno\",\"nsize\":\"10\"}",
+    "memory"  : 256,
+    "duration" : 14,
+    "gvSandbox" : "snapshot",
+    "svmId" : "10"
+  },
+  "pyco" : {
+    "language" : "python",
+    "benchmarkName" : "pyco",
+    "code" : "http://172.18.0.1:8000/apps/gv-py-compression.so",
+    "entryPoint" : "com.compression.Compression",
+    "payload" : "{\"url\":\"http://172.18.0.1:8000/video.mp4\"}",
+    "memory"  : 256,
+    "duration" : 61,
+    "gvSandbox" : "snapshot",
+    "svmId" : "11"
+  },
+  "pyth" : {
+    "language" : "python",
+    "benchmarkName" : "pyth",
+    "code" : "http://172.18.0.1:8000/apps/gv-py-thumbnail.so",
+    "entryPoint" : "com.thumbnail.Thumbnail",
+    "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
+    "memory"  : 1024,
+    "duration" : 21,
+    "gvSandbox" : "snapshot",
+    "svmId" : "12"
+  },
+  "pyvp" : {
+    "language" : "python",
+    "benchmarkName" : "pyvp",
+    "code" : "http://172.18.0.1:8000/apps/gv-py-video-processing.so",
+    "entryPoint" : "com.videoprocessing.VideoProcessing",
+    "payload" : "{\"video\":\"http://172.18.0.1:8000/video.mp4\",\"ffmpeg\":\"http://172.18.0.1:8000/ffmpeg\"}",
+    "memory"  : 2048,
+    "duration" : 3052,
+    "gvSandbox" : "process",
+    "svmId" : "13"
+  },
+  "pyup" : {
+    "language" : "python",
+    "benchmarkName" : "pyup",
+    "code" : "http://172.18.0.1:8000/apps/gv-py-uploader.so",
+    "entryPoint" : "com.uploader.Uploader",
+    "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
+    "memory"  : 256,
+    "duration" : 17,
+    "gvSandbox" : "snapshot",
+    "svmId" : "14"
+  },
+
+
+
+  "jshw" : {
+    "language" : "js",
+    "benchmarkName" : "jshw",
+    "code" : "http://172.18.0.1:8000/apps/gv-js-hello-world.so",
+    "entryPoint" : "com.helloworld.HelloWorld",
+    "payload" : "{\"name\":\"rbruno\"}",
+    "memory"  : 256,
+    "duration" : 5,
+    "gvSandbox" : "snapshot",
+    "svmId" : "1"
+  },
+  "jsdh" : {
+    "language" : "js",
+    "benchmarkName" : "jsdh",
+    "code" : "http://172.18.0.1:8000/apps/gv-js-dynamic-html.so",
+    "entryPoint" : "com.dynamichtml.DynamicHTML",
+    "payload" : "{\"url\":\"http://172.18.0.1:8000/template.html\",\"username\":\"rbruno\",\"nsize\":\"10\"}",
+    "memory"  : 256,
+    "duration" : 5,
+    "gvSandbox" : "snapshot",
+    "svmId" : "2"
+  },
+  "jsth" : {
+    "language" : "js",
+    "benchmarkName" : "jsth",
+    "code" : "http://172.18.0.1:8000/apps/gv-js-thumbnail.so",
+    "entryPoint" : "com.thumbnail.Thumbnail",
+    "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
+    "memory"  : 512,
+    "duration" : 25,
+    "gvSandbox" : "process",
+    "svmId" : "3"
+  },
+  "jsup" : {
+    "language" : "js",
+    "benchmarkName" : "jsup",
+    "code" : "http://172.18.0.1:8000/apps/gv-js-uploader.so",
+    "entryPoint" : "com.uploader.Uploader",
+    "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
+    "memory"  : 256,
+    "duration" : 10,
+    "gvSandbox" : "process",
+    "svmId" : "4"
   }
 }

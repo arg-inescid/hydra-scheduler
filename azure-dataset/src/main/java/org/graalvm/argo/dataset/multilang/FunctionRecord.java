@@ -2,15 +2,15 @@ package org.graalvm.argo.dataset.multilang;
 
 public class FunctionRecord {
     final FunctionLanguage language;
-    final int functionId;
+    final String benchmarkName;
 
-    public FunctionRecord(FunctionLanguage language, int functionId) {
+    public FunctionRecord(FunctionLanguage language, String benchmarkName) {
         this.language = language;
-        this.functionId = functionId;
+        this.benchmarkName = benchmarkName;
     }
 
     @Override
     public String toString() {
-        return language.toString() + "," + functionId;
+        return language.toString() + "," + benchmarkName;
     }
 }

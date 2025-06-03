@@ -1,21 +1,105 @@
 {
+  "jvhw" : {
+    "language" : "java",
+    "benchmarkName" : "jvhw",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/java/cr-hello-world/init.json",
+    "entryPoint" : "Hello",
+    "payload" : "{\"name\":\"rbruno\"}",
+    "memory"  : 256,
+    "duration" : 5
+  },
+  "jvfh" : {
+    "language" : "java",
+    "benchmarkName" : "jvfh",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/java/cr-file-hashing/init.json",
+    "entryPoint" : "Main",
+    "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
+    "memory"  : 256,
+    "duration" : 8
+  },
+  "jvcl" : {
+    "language" : "java",
+    "benchmarkName" : "jvcl",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/java/cr-classify/init.json",
+    "entryPoint" : "Main",
+    "payload" : "{\"model_url\":\"http://172.18.0.1:8000/tensorflow_inception_graph.pb\",\"labels_url\":\"http://172.18.0.1:8000/imagenet_comp_graph_label_strings.txt\",\"image_url\":\"http://172.18.0.1:8000/eagle.jpg\"}",
+    "memory"  : 2048,
+    "duration" : 4430
+  },
+  "jvhr" : {
+    "language" : "java",
+    "benchmarkName" : "jvhr",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/java/cr-httprequest/init.json",
+    "entryPoint" : "Main",
+    "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
+    "memory"  : 256,
+    "duration" : 7
+  },
+  "jvvp" : {
+    "language" : "java",
+    "benchmarkName" : "jvvp",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/java/cr-video-processing/init.json",
+    "entryPoint" : "Main",
+    "payload" : "{\"video_url\":\"http://172.18.0.1:8000/video.mp4\",\"ffmpeg_url\":\"http://172.18.0.1:8000/ffmpeg\"}",
+    "memory"  : 2048,
+    "duration" : 25175
+  },
+
+
+
   "pyhw" : {
     "language" : "python",
     "benchmarkName" : "pyhw",
     "code" : "{{ARGO_HOME}}/benchmarks/src/python/cr-hello-world/init.json",
     "entryPoint" : "main",
-    "payload" : "{ }",
-    "memory"  : 1024,
-    "duration" : 4
+    "payload" : "{\"name\":\"rbruno\"}",
+    "memory"  : 256,
+    "duration" : 5
   },
-  "pyup" : {
+  "pyms" : {
     "language" : "python",
-    "benchmarkName" : "pyup",
-    "code" : "{{ARGO_HOME}}/benchmarks/src/python/cr-uploader/init.json",
+    "benchmarkName" : "pyms",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/python/cr-mst/init.json",
     "entryPoint" : "main",
-    "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
-    "memory"  : 1024,
-    "duration" : 7
+    "payload" : "{\"size\":\"100\"}",
+    "memory"  : 256,
+    "duration" : 12
+  },
+  "pybf" : {
+    "language" : "python",
+    "benchmarkName" : "pybf",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/python/cr-bfs/init.json",
+    "entryPoint" : "main",
+    "payload" : "{\"size\":\"100\"}",
+    "memory"  : 256,
+    "duration" : 10
+  },
+  "pypr" : {
+    "language" : "python",
+    "benchmarkName" : "pypr",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/python/cr-pagerank/init.json",
+    "entryPoint" : "main",
+    "payload" : "{\"size\":\"100\"}",
+    "memory"  : 256,
+    "duration" : 12
+  },
+  "pydn" : {
+    "language" : "python",
+    "benchmarkName" : "pydn",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/python/cr-dna/init.json",
+    "entryPoint" : "main",
+    "payload" : "{\"fasta_url\":\"http://172.18.0.1:8000/bacillus_subtilis.fasta\"}",
+    "memory"  : 256,
+    "duration" : 32
+  },
+  "pydh" : {
+    "language" : "python",
+    "benchmarkName" : "pydh",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/python/cr-dynamic-html/init.json",
+    "entryPoint" : "main",
+    "payload" : "{\"url\":\"http://172.18.0.1:8000/template.html\",\"username\":\"rbruno\",\"nsize\":\"10\"}",
+    "memory"  : 256,
+    "duration" : 14
   },
   "pyco" : {
     "language" : "python",
@@ -23,8 +107,35 @@
     "code" : "{{ARGO_HOME}}/benchmarks/src/python/cr-compression/init.json",
     "entryPoint" : "main",
     "payload" : "{\"url\":\"http://172.18.0.1:8000/video.mp4\"}",
-    "memory"  : 1024,
-    "duration" : 99
+    "memory"  : 256,
+    "duration" : 61
+  },
+  "pyth" : {
+    "language" : "python",
+    "benchmarkName" : "pyth",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/python/cr-thumbnail/init.json",
+    "entryPoint" : "main",
+    "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
+    "memory"  : 256,
+    "duration" : 21
+  },
+  "pyvp" : {
+    "language" : "python",
+    "benchmarkName" : "pyvp",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/python/cr-video-processing/init.json",
+    "entryPoint" : "main",
+    "payload" : "{\"video_url\":\"http://172.18.0.1:8000/video.mp4\",\"ffmpeg_url\":\"http://172.18.0.1:8000/ffmpeg\"}",
+    "memory"  : 2048,
+    "duration" : 3052
+  },
+  "pyup" : {
+    "language" : "python",
+    "benchmarkName" : "pyup",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/python/cr-uploader/init.json",
+    "entryPoint" : "main",
+    "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
+    "memory"  : 256,
+    "duration" : 17
   },
 
 
@@ -34,18 +145,9 @@
     "benchmarkName" : "jshw",
     "code" : "{{ARGO_HOME}}/benchmarks/src/javascript/cr-hello-world/init.json",
     "entryPoint" : "main",
-    "payload" : "{ }",
-    "memory"  : 1024,
-    "duration" : 4
-  },
-  "jsup" : {
-    "language" : "js",
-    "benchmarkName" : "jsup",
-    "code" : "{{ARGO_HOME}}/benchmarks/src/javascript/cr-uploader/init.json",
-    "entryPoint" : "main",
-    "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
-    "memory"  : 1024,
-    "duration" : 10
+    "payload" : "{\"name\":\"rbruno\"}",
+    "memory"  : 256,
+    "duration" : 5
   },
   "jsdh" : {
     "language" : "js",
@@ -53,37 +155,25 @@
     "code" : "{{ARGO_HOME}}/benchmarks/src/javascript/cr-dynamic-html/init.json",
     "entryPoint" : "main",
     "payload" : "{\"url\":\"http://172.18.0.1:8000/template.html\",\"username\":\"rbruno\",\"nsize\":\"10\"}",
-    "memory"  : 1024,
-    "duration" : 7
-  },
-
-
-
-  "jvhw" : {
-    "language" : "java",
-    "benchmarkName" : "jvhw",
-    "code" : "{{ARGO_HOME}}/benchmarks/src/java/cr-hello-world/init.json",
-    "entryPoint" : "Hello",
-    "payload" : "{\"name\":\"rbruno\"}",
-    "memory"  : 1024,
+    "memory"  : 256,
     "duration" : 5
   },
-  "jvfh" : {
-    "language" : "java",
-    "benchmarkName" : "jvfh",
-    "code" : "{{ARGO_HOME}}/benchmarks/src/java/cr-file-hashing/init.json",
-    "entryPoint" : "Main",
+  "jsth" : {
+    "language" : "js",
+    "benchmarkName" : "jsth",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/javascript/cr-thumbnail/init.json",
+    "entryPoint" : "main",
     "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
-    "memory"  : 1024,
-    "duration" : 6
+    "memory"  : 512,
+    "duration" : 25
   },
-  "jvhr" : {
-    "language" : "java",
-    "benchmarkName" : "jvhr",
-    "code" : "{{ARGO_HOME}}/benchmarks/src/java/cr-httprequest/init.json",
-    "entryPoint" : "Main",
+  "jsup" : {
+    "language" : "js",
+    "benchmarkName" : "jsup",
+    "code" : "{{ARGO_HOME}}/benchmarks/src/javascript/cr-uploader/init.json",
+    "entryPoint" : "main",
     "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
-    "memory"  : 1024,
-    "duration" : 6
+    "memory"  : 256,
+    "duration" : 10
   }
 }
