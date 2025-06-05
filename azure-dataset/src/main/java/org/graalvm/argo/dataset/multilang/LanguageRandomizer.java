@@ -103,8 +103,6 @@ public class LanguageRandomizer {
                     // Assume both mapths are updated at the same time.
                     functionInvocations.put(function, 1L);
                 } else {
-                    // SERHII: No need for this, we generate traces in such a way that for all invocations of the same function, duration will be the same.
-                    // functionDurations.put(function, functionDurations.get(function) + duration);
                     functionInvocations.put(function, functionInvocations.get(function) + 1);
                 }
 
@@ -117,12 +115,6 @@ public class LanguageRandomizer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // We are averaging the duration by dividing the total sum by the number of invocations.
-        // SERHII: No need for this, we generate traces in such a way that for all invocations of the same function, duration will be the same.
-        // for (Map.Entry<String, Long> entry : functionDurations.entrySet()) {
-        //     entry.setValue(entry.getValue() / functionInvocations.get(entry.getKey()));
-        // }
 
         // List with mappings Function->InvocationCount (derived from functionInvocations).
         List<Map.Entry<String, Long>> functionsList = new ArrayList<>(functionInvocations.entrySet());
