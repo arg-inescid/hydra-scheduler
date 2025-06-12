@@ -141,7 +141,7 @@
 
 
   "jshw" : {
-    "language" : "js",
+    "language" : "javascript",
     "benchmarkName" : "jshw",
     "code" : "{{ARGO_HOME}}/benchmarks/src/javascript/cr-hello-world/init.json",
     "entryPoint" : "main",
@@ -150,7 +150,7 @@
     "duration" : 5
   },
   "jsdh" : {
-    "language" : "js",
+    "language" : "javascript",
     "benchmarkName" : "jsdh",
     "code" : "{{ARGO_HOME}}/benchmarks/src/javascript/cr-dynamic-html/init.json",
     "entryPoint" : "main",
@@ -159,7 +159,7 @@
     "duration" : 5
   },
   "jsth" : {
-    "language" : "js",
+    "language" : "javascript",
     "benchmarkName" : "jsth",
     "code" : "{{ARGO_HOME}}/benchmarks/src/javascript/cr-thumbnail/init.json",
     "entryPoint" : "main",
@@ -168,7 +168,7 @@
     "duration" : 25
   },
   "jsup" : {
-    "language" : "js",
+    "language" : "javascript",
     "benchmarkName" : "jsup",
     "code" : "{{ARGO_HOME}}/benchmarks/src/javascript/cr-uploader/init.json",
     "entryPoint" : "main",

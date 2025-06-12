@@ -27,7 +27,7 @@
     "payload" : "{\"model_url\":\"http://172.18.0.1:8000/tensorflow_inception_graph.pb\",\"labels_url\":\"http://172.18.0.1:8000/imagenet_comp_graph_label_strings.txt\",\"image_url\":\"http://172.18.0.1:8000/eagle.jpg\"}",
     "memory"  : 2048,
     "duration" : 4430,
-    "gvSandbox" : "isolate"
+    "gvSandbox" : "process"
   },
   "jvhr" : {
     "language" : "java",
@@ -47,7 +47,7 @@
     "payload" : "{\"video\":\"http://172.18.0.1:8000/video.mp4\",\"ffmpeg\":\"http://172.18.0.1:8000/ffmpeg\"}",
     "memory"  : 2048,
     "duration" : 25175,
-    "gvSandbox" : "isolate"
+    "gvSandbox" : "process"
   },
 
 
@@ -166,7 +166,7 @@
 
 
   "jshw" : {
-    "language" : "js",
+    "language" : "javascript",
     "benchmarkName" : "jshw",
     "code" : "http://172.18.0.1:8000/apps/gv-js-hello-world.so",
     "entryPoint" : "com.helloworld.HelloWorld",
@@ -177,7 +177,7 @@
     "svmId" : "1"
   },
   "jsdh" : {
-    "language" : "js",
+    "language" : "javascript",
     "benchmarkName" : "jsdh",
     "code" : "http://172.18.0.1:8000/apps/gv-js-dynamic-html.so",
     "entryPoint" : "com.dynamichtml.DynamicHTML",
@@ -188,7 +188,7 @@
     "svmId" : "2"
   },
   "jsth" : {
-    "language" : "js",
+    "language" : "javascript",
     "benchmarkName" : "jsth",
     "code" : "http://172.18.0.1:8000/apps/gv-js-thumbnail.so",
     "entryPoint" : "com.thumbnail.Thumbnail",
@@ -199,7 +199,7 @@
     "svmId" : "3"
   },
   "jsup" : {
-    "language" : "js",
+    "language" : "javascript",
     "benchmarkName" : "jsup",
     "code" : "http://172.18.0.1:8000/apps/gv-js-uploader.so",
     "entryPoint" : "com.uploader.Uploader",
