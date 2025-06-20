@@ -59,7 +59,7 @@ public class ExecutorConfiguration {
     }
 
     private String getInvocationCollocation(String executionMode) {
-        if ("gv".equals(executionMode) || "gv-sf".equals(executionMode) || "gv-fc".equals(executionMode)) {
+        if ("gv".equals(executionMode) || "gv-sf".equals(executionMode) || "gv-fc".equals(executionMode) || "kn".equals(executionMode)) {
             return "true";
         }
         return "false";
