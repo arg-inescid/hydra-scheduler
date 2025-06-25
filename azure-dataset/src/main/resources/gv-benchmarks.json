@@ -206,7 +206,7 @@
     "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
     "memory"  : 256,
     "duration" : 10,
-    "gvSandbox" : "process",
+    "gvSandbox" : "context",
     "svmId" : "4"
   }
 }
