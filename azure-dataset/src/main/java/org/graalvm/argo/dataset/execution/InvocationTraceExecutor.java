@@ -115,10 +115,8 @@ public class InvocationTraceExecutor {
         Benchmark benchmarkConfig = config.getBenchmarkConfiguration(benchmarkName);
         FunctionLanguage functionLanguage = FunctionLanguage.fromString(benchmarkConfig.language);
 
-        // Graalvisor Python/JavaScript benchmarks have Java wrappers.
-        FunctionLanguage actualLanguage = config.functionRuntime == FunctionRuntime.GRAALVISOR ? FunctionLanguage.JAVA : functionLanguage;
         String message = "u username=" + owner + " function_name=" + function +
-                " function_language=" + actualLanguage + " function_entry_point=" + benchmarkConfig.entryPoint +
+                " function_language=" + functionLanguage + " function_entry_point=" + benchmarkConfig.entryPoint +
                 " function_memory=" + benchmarkConfig.memory + " function_runtime=" + config.functionRuntime.toString() +
                 " function_isolation=" + config.functionIsolation + " invocation_collocation=" + config.invocationCollocation;
         if (benchmarkConfig.gvSandbox != null) {

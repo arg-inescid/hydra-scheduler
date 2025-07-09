@@ -60,7 +60,7 @@
     "payload" : "{\"name\":\"rbruno\"}",
     "memory"  : 256,
     "duration" : 5,
-    "gvSandbox" : "snapshot",
+    "gvSandbox" : "snapshot-process",
     "svmId" : "5"
   },
   "pyms" : {
@@ -71,7 +71,7 @@
     "payload" : "{\"size\":\"100\"}",
     "memory"  : 256,
     "duration" : 12,
-    "gvSandbox" : "snapshot",
+    "gvSandbox" : "snapshot-process",
     "svmId" : "6"
   },
   "pybf" : {
@@ -82,7 +82,7 @@
     "payload" : "{\"size\":\"100\"}",
     "memory"  : 256,
     "duration" : 10,
-    "gvSandbox" : "snapshot",
+    "gvSandbox" : "snapshot-process",
     "svmId" : "7"
   },
   "pypr" : {
@@ -93,7 +93,7 @@
     "payload" : "{\"size\":\"10\"}",
     "memory"  : 256,
     "duration" : 12,
-    "gvSandbox" : "snapshot",
+    "gvSandbox" : "snapshot-process",
     "svmId" : "8"
   },
   "pydn" : {
@@ -104,7 +104,7 @@
     "payload" : "{\"fasta_url\":\"http://172.18.0.1:8000/bacillus_subtilis.fasta\"}",
     "memory"  : 256,
     "duration" : 32,
-    "gvSandbox" : "snapshot",
+    "gvSandbox" : "snapshot-process",
     "svmId" : "9"
   },
   "pydh" : {
@@ -115,7 +115,7 @@
     "payload" : "{\"url\":\"http://172.18.0.1:8000/template.html\",\"username\":\"rbruno\",\"nsize\":\"10\"}",
     "memory"  : 256,
     "duration" : 14,
-    "gvSandbox" : "snapshot",
+    "gvSandbox" : "snapshot-process",
     "svmId" : "10"
   },
   "pyco" : {
@@ -126,7 +126,7 @@
     "payload" : "{\"url\":\"http://172.18.0.1:8000/video.mp4\"}",
     "memory"  : 256,
     "duration" : 61,
-    "gvSandbox" : "snapshot",
+    "gvSandbox" : "snapshot-process",
     "svmId" : "11"
   },
   "pyth" : {
@@ -137,7 +137,7 @@
     "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
     "memory"  : 1024,
     "duration" : 21,
-    "gvSandbox" : "snapshot",
+    "gvSandbox" : "snapshot-process",
     "svmId" : "12"
   },
   "pyvp" : {
@@ -159,7 +159,7 @@
     "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
     "memory"  : 256,
     "duration" : 17,
-    "gvSandbox" : "snapshot",
+    "gvSandbox" : "snapshot-process",
     "svmId" : "14"
   },
 
@@ -173,7 +173,7 @@
     "payload" : "{\"name\":\"rbruno\"}",
     "memory"  : 256,
     "duration" : 5,
-    "gvSandbox" : "snapshot",
+    "gvSandbox" : "snapshot-process",
     "svmId" : "1"
   },
   "jsdh" : {
@@ -184,7 +184,7 @@
     "payload" : "{\"url\":\"http://172.18.0.1:8000/template.html\",\"username\":\"rbruno\",\"nsize\":\"10\"}",
     "memory"  : 256,
     "duration" : 5,
-    "gvSandbox" : "snapshot",
+    "gvSandbox" : "snapshot-process",
     "svmId" : "2"
   },
   "jsth" : {
@@ -206,7 +206,7 @@
     "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
     "memory"  : 256,
     "duration" : 10,
-    "gvSandbox" : "context",
+    "gvSandbox" : "process",
     "svmId" : "4"
   }
 }
