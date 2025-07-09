@@ -90,7 +90,7 @@
       "entryPoint" : "main",
       "payload" : "{\"fasta_url\":\"http://172.18.0.1:8000/bacillus_subtilis.fasta\"}",
       "memory"  : 2048,
-      "duration" : 32
+      "duration" : 27
     },
     "pydh" : {
       "language" : "python",
@@ -135,7 +135,7 @@
       "entryPoint" : "main",
       "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
       "memory"  : 1024,
-      "duration" : 17
+      "duration" : 15
     },
   
   
@@ -156,7 +156,7 @@
       "entryPoint" : "main",
       "payload" : "{\"url\":\"http://172.18.0.1:8000/template.html\",\"username\":\"rbruno\",\"nsize\":\"10\"}",
       "memory"  : 256,
-      "duration" : 5
+      "duration" : 6
     },
     "jsth" : {
       "language" : "javascript",
@@ -174,7 +174,7 @@
       "entryPoint" : "main",
       "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
       "memory"  : 512,
-      "duration" : 10
+      "duration" : 9
     }
   }
   

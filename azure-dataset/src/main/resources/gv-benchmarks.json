@@ -103,7 +103,7 @@
     "entryPoint" : "com.dna.DNA",
     "payload" : "{\"fasta_url\":\"http://172.18.0.1:8000/bacillus_subtilis.fasta\"}",
     "memory"  : 256,
-    "duration" : 32,
+    "duration" : 27,
     "gvSandbox" : "snapshot-process",
     "svmId" : "9"
   },
@@ -158,7 +158,7 @@
     "entryPoint" : "com.uploader.Uploader",
     "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
     "memory"  : 256,
-    "duration" : 17,
+    "duration" : 15,
     "gvSandbox" : "snapshot-process",
     "svmId" : "14"
   },
@@ -183,7 +183,7 @@
     "entryPoint" : "com.dynamichtml.DynamicHTML",
     "payload" : "{\"url\":\"http://172.18.0.1:8000/template.html\",\"username\":\"rbruno\",\"nsize\":\"10\"}",
     "memory"  : 256,
-    "duration" : 5,
+    "duration" : 6,
     "gvSandbox" : "snapshot-process",
     "svmId" : "2"
   },
@@ -205,7 +205,7 @@
     "entryPoint" : "com.uploader.Uploader",
     "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
     "memory"  : 256,
-    "duration" : 10,
+    "duration" : 9,
     "gvSandbox" : "process",
     "svmId" : "4"
   }
