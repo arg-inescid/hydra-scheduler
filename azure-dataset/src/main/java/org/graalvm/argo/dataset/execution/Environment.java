@@ -3,10 +3,10 @@ package org.graalvm.argo.dataset.execution;
 public class Environment {
 
     // General configuration.
-    public final static int WORKER_COUNT = 100;
+    public final static int WORKER_COUNT = 40;
     public final static int MAX_MEMORY_PER_WORKER_MB = 106496;
     // Negate if you don't want to insert real worker.
-    public final static int REAL_WORKER_INDEX = 9;
+    public final static int REAL_WORKER_INDEX = 7;
     public final static String REAL_WORKER_TRACE_OUTPUT = "/tmp/lse_trace.csv";
     // Statistics about used memory and #VMs in each worker (theoretic, calculated by memory managers).
     public final static boolean COLLECT_STATISTICS = false;
@@ -17,7 +17,7 @@ public class Environment {
 
     // Fake worker configuration.
     public static final String FAKE_WORKER_HOST = "localhost";
-    public final static int FAKE_WORKER_FIRST_PORT = 50010;
+    public final static int FAKE_WORKER_FIRST_PORT = 30010;
 
     public static final int VM_MEMORY = 1024;
 }

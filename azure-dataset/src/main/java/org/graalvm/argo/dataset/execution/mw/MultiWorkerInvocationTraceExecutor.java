@@ -58,7 +58,7 @@ public class MultiWorkerInvocationTraceExecutor extends InvocationTraceExecutor 
     }
 
     private AbstractMemoryManagerFactory getMemoryManagerFactory(ExecutorConfiguration config) {
-        if ("true".equals(config.invocationCollocation)) {
+        if (false/*"true".equals(config.invocationCollocation)*/) {
             if ("true".equals(config.functionIsolation)) {
                 System.out.println("Using SingleFunctionMemoryManager");
                 return new SingleFunctionMemoryManagerFactory();
@@ -224,14 +224,14 @@ public class MultiWorkerInvocationTraceExecutor extends InvocationTraceExecutor 
                 break;
             }
         }
-        if (result == null) {
-            for (AbstractWorker w : workers) {
-                if (w.canAccommodateRequest(owner, function, invocationMemory) && w.hasOwnerRegistered(owner)) {
-                    result = w;
-                    break;
-                }
-            }
-        }
+        // if (result == null) {
+        //     for (AbstractWorker w : workers) {
+        //         if (w.canAccommodateRequest(owner, function, invocationMemory) && w.hasOwnerRegistered(owner)) {
+        //             result = w;
+        //             break;
+        //         }
+        //     }
+        // }
         if (result == null) {
             result = findLeastUtilized();
             if (!result.canAccommodateRequest(owner, function, invocationMemory)) {

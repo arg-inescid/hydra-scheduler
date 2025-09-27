@@ -95,22 +95,10 @@ public class LanguageRandomizer {
         List<Map.Entry<String, Long>> functionsList = new ArrayList<>(functionInvocations.entrySet());
         Collections.shuffle(functionsList);
 
-        int currentInvocationsNumber = 0;
-        int jsThreshold = (int) (invocationsNumber * ((double) JAVASCRIPT_PERC / 100));
-        int pyThreshold = (int) (invocationsNumber * ((double) PYTHON_PERC / 100)) + jsThreshold;
-        int jvThreshold = (int) (invocationsNumber * ((double) JAVA_PERC / 100)) + pyThreshold;
         for (Map.Entry<String, Long> functionEntry : functionsList) {
-            currentInvocationsNumber += functionEntry.getValue();
             int duration = functionDurations.get(functionEntry.getKey());
 
-            FunctionLanguage language;
-            if (currentInvocationsNumber <= jsThreshold) {
-                language = FunctionLanguage.JAVASCRIPT;
-            } else if (currentInvocationsNumber <= pyThreshold) {
-                language = FunctionLanguage.PYTHON;
-            } else {
-                language = FunctionLanguage.JAVA;
-            }
+            FunctionLanguage language = FunctionLanguage.JAVA;
 
             String benchmarkName = BenchmarkDuration.getBenchmark(language, duration);
             FunctionRecord record = new FunctionRecord(language, benchmarkName);

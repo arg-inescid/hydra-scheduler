@@ -1,0 +1,65 @@
+{
+  "dn" : {
+    "language" : "java",
+    "benchmarkName" : "dn",
+    "code" : "{{ARGO_HOME}}/../faastion/benchmarks/src/java/SeBS/gv-dna-visualization/build/libdna.so",
+    "entryPoint" : "com.dna.DNAVisualization",
+    "payload" : "{}",
+    "memory"  : 512,
+    "duration" : 20
+  },
+  "dh" : {
+    "language" : "java",
+    "benchmarkName" : "dh",
+    "code" : "{{ARGO_HOME}}/../faastion/benchmarks/src/java/SeBS/gv-dynamic-html/build/libdynamic-html.so",
+    "entryPoint" : "com.dynamic_html.DynamicHTML",
+    "payload" : "{}",
+    "memory"  : 512,
+    "duration" : 8
+  },
+  "bf" : {
+    "language" : "java",
+    "benchmarkName" : "bf",
+    "code" : "{{ARGO_HOME}}/../faastion/benchmarks/src/java/SeBS/gv-native-bfs/build/libbfs.so",
+    "entryPoint" : "com.jni.BFS",
+    "payload" : "{}",
+    "memory"  : 256,
+    "duration" : 12
+  },
+  "co" : {
+    "language" : "java",
+    "benchmarkName" : "co",
+    "code" : "{{ARGO_HOME}}/../faastion/benchmarks/src/java/SeBS/gv-native-compression/build/libzip.so",
+    "entryPoint" : "com.jni.ZIPCompression",
+    "payload" : "{}",
+    "memory"  : 1024,
+    "duration" : 18
+  },
+  "ms" : {
+    "language" : "java",
+    "benchmarkName" : "ms",
+    "code" : "{{ARGO_HOME}}/../faastion/benchmarks/src/java/SeBS/gv-native-mst/build/libmst.so",
+    "entryPoint" : "com.jni.MST",
+    "payload" : "{}",
+    "memory"  : 256,
+    "duration" : 7
+  },
+  "pr" : {
+    "language" : "java",
+    "benchmarkName" : "pr",
+    "code" : "{{ARGO_HOME}}/../faastion/benchmarks/src/java/SeBS/gv-native-pagerank/build/libpagerank.so",
+    "entryPoint" : "com.jni.PageRank",
+    "payload" : "{}",
+    "memory"  : 256,
+    "duration" : 8
+  },
+  "up" : {
+    "language" : "java",
+    "benchmarkName" : "up",
+    "code" : "{{ARGO_HOME}}/../faastion/benchmarks/src/java/SeBS/gv-uploader/build/libuploader.so",
+    "entryPoint" : "com.uploader.Uploader",
+    "payload" : "{}",
+    "memory"  : 512,
+    "duration" : 11
+  }
+}

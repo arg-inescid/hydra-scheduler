@@ -10,30 +10,15 @@ public class BenchmarkDuration {
 
     static {
         benchmarks.put(FunctionLanguage.JAVA, new TreeMap<>());
-        benchmarks.put(FunctionLanguage.JAVASCRIPT, new TreeMap<>());
-        benchmarks.put(FunctionLanguage.PYTHON, new TreeMap<>());
 
-        addBenchmark(FunctionLanguage.JAVA, "jvhw", 5);
-        addBenchmark(FunctionLanguage.JAVA, "jvfh", 8);
-        addBenchmark(FunctionLanguage.JAVA, "jvcl", 4430);
-        addBenchmark(FunctionLanguage.JAVA, "jvhr", 7);
-        addBenchmark(FunctionLanguage.JAVA, "jvvp", 25175);
+        addBenchmark(FunctionLanguage.JAVA, "dn", 20);
+        addBenchmark(FunctionLanguage.JAVA, "dh", 200);
+        addBenchmark(FunctionLanguage.JAVA, "bf", 12);
+        addBenchmark(FunctionLanguage.JAVA, "co", 100);
+        addBenchmark(FunctionLanguage.JAVA, "ms", 7);
+        addBenchmark(FunctionLanguage.JAVA, "pr", 8);
+        addBenchmark(FunctionLanguage.JAVA, "up", 15);
 
-        addBenchmark(FunctionLanguage.PYTHON, "pyhw", 5);
-        addBenchmark(FunctionLanguage.PYTHON, "pyms", 12);
-        addBenchmark(FunctionLanguage.PYTHON, "pybf", 10);
-        addBenchmark(FunctionLanguage.PYTHON, "pypr", 12);
-        addBenchmark(FunctionLanguage.PYTHON, "pydn", 32);
-        addBenchmark(FunctionLanguage.PYTHON, "pydh", 14);
-        addBenchmark(FunctionLanguage.PYTHON, "pyco", 61);
-        addBenchmark(FunctionLanguage.PYTHON, "pyth", 21);
-        addBenchmark(FunctionLanguage.PYTHON, "pyvp", 3052);
-        addBenchmark(FunctionLanguage.PYTHON, "pyup", 17);
-
-        addBenchmark(FunctionLanguage.JAVASCRIPT, "jshw", 5);
-        addBenchmark(FunctionLanguage.JAVASCRIPT, "jsdh", 5);
-        addBenchmark(FunctionLanguage.JAVASCRIPT, "jsth", 25);
-        addBenchmark(FunctionLanguage.JAVASCRIPT, "jsup", 10);
     }
 
     private static void addBenchmark(FunctionLanguage language, String name, int duration) {

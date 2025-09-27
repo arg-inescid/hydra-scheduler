@@ -8,7 +8,7 @@ fi
 
 LOCAL_LAMBDA_MANAGER_HOST=localhost
 LAMBDA_MANAGER_PORT=30009
-LAMBDA_MANAGER_HOME=$ARGO_HOME/lambda-manager
+LAMBDA_MANAGER_HOME=$ARGO_HOME/../argo/lambda-manager
 
 
 function wait_port {
@@ -26,7 +26,7 @@ function start_lambda_manager {
         bash $LAMBDA_MANAGER_HOME/deploy.sh --config $config_path --variables $variables_path --socket &
         wait_port $LOCAL_LAMBDA_MANAGER_HOST $LAMBDA_MANAGER_PORT
     else
-        ssh -i $SSH_KEY $REMOTE_USER@$REMOTE_HOST 'bash $ARGO_HOME/lambda-manager/deploy.sh --config '$config_path' --variables '$variables_path' --socket &> /tmp/lm.log' &
+        ssh -i $SSH_KEY $REMOTE_USER@$REMOTE_HOST 'bash $ARGO_HOME/../argo/lambda-manager/deploy.sh --config '$config_path' --variables '$variables_path' --socket &> /tmp/lm.log' &
         wait_port $REMOTE_HOST $LAMBDA_MANAGER_PORT
     fi
 }
@@ -48,9 +48,15 @@ function save_experiment_results {
         cp $LAMBDA_MANAGER_HOME/manager_metrics/metrics.log $results_dir/"$mode"_metrics.log
         cp $LAMBDA_MANAGER_HOME/manager_logs/lambda_manager.log $results_dir/"$mode"_manager.log
         tar vzcf $results_dir/"$mode"_lambda_logs.tar.gz $LAMBDA_MANAGER_HOME/lambda_logs &> /dev/null
+
+        cp $LAMBDA_MANAGER_HOME/manager_metrics/lm.cpu $results_dir/"$mode"_lm.cpu
+        cp $LAMBDA_MANAGER_HOME/manager_metrics/lm.rss $results_dir/"$mode"_lm.rss
     else
-        ssh -i $SSH_KEY $REMOTE_USER@$REMOTE_HOST 'cp $ARGO_HOME/lambda-manager/manager_metrics/metrics.log '$results_dir'/'$mode'_metrics.log'
-        ssh -i $SSH_KEY $REMOTE_USER@$REMOTE_HOST 'cp $ARGO_HOME/lambda-manager/manager_logs/lambda_manager.log '$results_dir'/'$mode'_manager.log'
-        ssh -i $SSH_KEY $REMOTE_USER@$REMOTE_HOST 'tar vzcf '$results_dir'/'$mode'_lambda_logs.tar.gz $ARGO_HOME/lambda-manager/lambda_logs' &> /dev/null
+        ssh -i $SSH_KEY $REMOTE_USER@$REMOTE_HOST 'cp $ARGO_HOME/../argo/lambda-manager/manager_metrics/metrics.log '$results_dir'/'$mode'_metrics.log'
+        ssh -i $SSH_KEY $REMOTE_USER@$REMOTE_HOST 'cp $ARGO_HOME/../argo/lambda-manager/manager_logs/lambda_manager.log '$results_dir'/'$mode'_manager.log'
+        ssh -i $SSH_KEY $REMOTE_USER@$REMOTE_HOST 'tar vzcf '$results_dir'/'$mode'_lambda_logs.tar.gz $ARGO_HOME/../argo/lambda-manager/lambda_logs' &> /dev/null
+
+        ssh -i $SSH_KEY $REMOTE_USER@$REMOTE_HOST 'cp $ARGO_HOME/../argo/lambda-manager/manager_metrics/lm.cpu '$results_dir'/'$mode'_lm.cpu'
+        ssh -i $SSH_KEY $REMOTE_USER@$REMOTE_HOST 'cp $ARGO_HOME/../argo/lambda-manager/manager_metrics/lm.rss '$results_dir'/'$mode'_lm.rss'
     fi
 }

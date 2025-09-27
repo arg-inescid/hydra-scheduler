@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Example usage of this script:
-# bash benchmark-lse-all.sh /path/to/dataset/file
+# bash benchmark-lse-all-new.sh
 # The structure of the .csv file should be as follows:
 # HashOwner HashFunction AverageAllocatedMb AverageDuration Timestamp
 
@@ -9,37 +9,84 @@ function DIR {
     echo "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 }
 
-sudo ls &> /dev/null
+DATASET_FILE=/tmp/lse_trace.csv
+RESULTS_DIR=/tmp/lse-results
 
-DATASET_FILE=$1
-ARGO_HOME=$(DIR)/../../argo/
-LAMBDA_MANAGER_CONFIG=$ARGO_HOME/run/configs/manager/default-lambda-manager.json
+# echo "Running GV FC..."
+# bash $(DIR)/benchmark-lse.sh gv-fc $DATASET_FILE --single $RESULTS_DIR
+# echo "Running GV FC... Finished!"
 
-OW_LAMBDA_MANAGER_CONFIG=/home/sergiyivan/results/ow-default-lambda-manager.json
-GV_SI_LAMBDA_MANAGER_CONFIG=/home/sergiyivan/results/gv-si-default-lambda-manager.json
-COLLOCATABLE_LAMBDA_MANAGER_CONFIG=/home/sergiyivan/results/collocatable-default-lambda-manager.json
+# sleep 10
 
+# echo "Running GV..."
+# bash $(DIR)/benchmark-lse.sh gv $DATASET_FILE --single $RESULTS_DIR
+# echo "Running GV... Finished!"
 
-cp $OW_LAMBDA_MANAGER_CONFIG $LAMBDA_MANAGER_CONFIG
-bash $(DIR)/benchmark-lse.sh ow $DATASET_FILE
+# sleep 10
+
+# echo "Running GV-SF..."
+# bash $(DIR)/benchmark-lse.sh gv-sf $DATASET_FILE --single $RESULTS_DIR
+# echo "Running GV-SF... Finished!"
+
+# sleep 10
+
+# echo "Running GV-SI..."
+# bash $(DIR)/benchmark-lse.sh gv-si $DATASET_FILE --single $RESULTS_DIR
+# echo "Running GV-SI... Finished!"
+
+# sleep 10
+
+# echo "Running OW..."
+# bash $(DIR)/benchmark-lse.sh ow $DATASET_FILE --single $RESULTS_DIR
+# echo "Running OW... Finished!"
+
+# sleep 10
+
+# echo "Running KN..."
+# bash $(DIR)/benchmark-lse.sh kn $DATASET_FILE --single $RESULTS_DIR
+# echo "Running KN... Finished!"
+
+# sleep 10
+
+# echo "Running GraalOS..."
+# bash $(DIR)/benchmark-lse.sh gos $DATASET_FILE --single $RESULTS_DIR
+# echo "Running GraalOS... Finished!"
+
+# sleep 10
+
+# echo "Running GraalOS (native)..."
+# bash $(DIR)/benchmark-lse.sh gos-native $DATASET_FILE --single $RESULTS_DIR
+# echo "Running GraalOS (native)... Finished!"
+
+# sleep 10
+
+# echo "Running Faastion..."
+# bash $(DIR)/benchmark-lse.sh faastion $DATASET_FILE --single $RESULTS_DIR
+# echo "Running Faastion... Finished!"
 
 sleep 10
-bash /home/sergiyivan/lse/argo/argo/lambda-manager/cleanup.sh &> /dev/null
 
-cp $GV_SI_LAMBDA_MANAGER_CONFIG $LAMBDA_MANAGER_CONFIG
-bash $(DIR)/benchmark-lse.sh gv-si $DATASET_FILE
-
-sleep 10
-bash /home/sergiyivan/lse/argo/argo/lambda-manager/cleanup.sh &> /dev/null
-
-cp $COLLOCATABLE_LAMBDA_MANAGER_CONFIG $LAMBDA_MANAGER_CONFIG
-bash $(DIR)/benchmark-lse.sh gv-sf $DATASET_FILE
+echo "Running Faastlane..."
+bash $(DIR)/benchmark-lse.sh faastlane $DATASET_FILE --single $RESULTS_DIR
+echo "Running Faastlane... Finished!"
 
 sleep 10
-bash /home/sergiyivan/lse/argo/argo/lambda-manager/cleanup.sh &> /dev/null
 
-bash $(DIR)/benchmark-lse.sh gv $DATASET_FILE
+echo "Running Faastion-LPI..."
+bash $(DIR)/benchmark-lse.sh faastion-lpi $DATASET_FILE --single $RESULTS_DIR
+echo "Running Faastion-LPI... Finished!"
 
-bash /home/sergiyivan/lse/argo/argo/lambda-manager/cleanup.sh &> /dev/null
+sleep 10
 
-echo "Finished executing all modes, check your results directory (/home/sergiyivan/results/lse)!"
+echo "Running Faastion-KN..."
+bash $(DIR)/benchmark-lse.sh faastion-kn $DATASET_FILE --single $RESULTS_DIR
+echo "Running Faastion-KN... Finished!"
+
+sleep 10
+
+echo "Running Faastion-OW..."
+bash $(DIR)/benchmark-lse.sh faastion-ow $DATASET_FILE --single $RESULTS_DIR
+echo "Running Faastion-OW... Finished!"
+
+
+echo "Finished executing all modes, check your results directory ($RESULTS_DIR)!"

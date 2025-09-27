@@ -5,7 +5,11 @@ public enum FunctionRuntime {
     GRAALVISOR("graalvisor"),
     GRAALOS("graalos"),
     OPENWHISK("openwhisk"),
-    KNATIVE("knative");
+    KNATIVE("knative"),
+
+    FAASTION("faastion"),
+    FAASTLANE("faastlane"),
+    FAASTION_LPI("faastion-lpi");
 
     private final String runtime;
 

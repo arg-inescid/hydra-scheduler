@@ -118,7 +118,8 @@ public class InvocationTraceExecutor {
         String message = "u username=" + owner + " function_name=" + function +
                 " function_language=" + functionLanguage + " function_entry_point=" + benchmarkConfig.entryPoint +
                 " function_memory=" + benchmarkConfig.memory + " function_runtime=" + config.functionRuntime.toString() +
-                " function_isolation=" + config.functionIsolation + " invocation_collocation=" + config.invocationCollocation;
+                " function_isolation=" + config.functionIsolation + " invocation_collocation=" + config.invocationCollocation +
+                " benchmark_name=" + benchmarkName;
         if (benchmarkConfig.gvSandbox != null) {
             message = message + " gv_sandbox=" + benchmarkConfig.gvSandbox;
             // For Python/JS functions that need sandbox snapshotting.
@@ -129,7 +130,7 @@ public class InvocationTraceExecutor {
         // Append path to the function as payload in ''.
         message = message + " '" + benchmarkConfig.code + "'";
         if (!config.isDebugMode()) {
-            SocketNetworkUtils.send(address, message, true, (s) -> {});
+            SocketNetworkUtils.send(address, message, false, (s) -> {});
         }
     }
 

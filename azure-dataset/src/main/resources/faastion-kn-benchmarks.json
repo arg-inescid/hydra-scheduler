@@ -1,0 +1,65 @@
+{
+  "dn" : {
+    "language" : "java",
+    "benchmarkName" : "dn",
+    "code" : "knative-jv/kn-dna",
+    "entryPoint" : "Main",
+    "payload" : "{}",
+    "memory"  : 512,
+    "duration" : 20
+  },
+  "dh" : {
+    "language" : "java",
+    "benchmarkName" : "dh",
+    "code" : "knative-jv/kn-dynamic-html",
+    "entryPoint" : "Main",
+    "payload" : "{\"url\":\"http://172.18.0.1:8000/template.html\"}",
+    "memory"  : 512,
+    "duration" : 8
+  },
+  "bf" : {
+    "language" : "java",
+    "benchmarkName" : "bf",
+    "code" : "knative-jv/kn-bfs",
+    "entryPoint" : "Main",
+    "payload" : "{}",
+    "memory"  : 256,
+    "duration" : 12
+  },
+  "co" : {
+    "language" : "java",
+    "benchmarkName" : "co",
+    "code" : "knative-jv/kn-compression",
+    "entryPoint" : "Main",
+    "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\"}",
+    "memory"  : 1024,
+    "duration" : 18
+  },
+  "ms" : {
+    "language" : "java",
+    "benchmarkName" : "ms",
+    "code" : "knative-jv/kn-mst",
+    "entryPoint" : "Main",
+    "payload" : "{}",
+    "memory"  : 256,
+    "duration" : 7
+  },
+  "pr" : {
+    "language" : "java",
+    "benchmarkName" : "pr",
+    "code" : "knative-jv/kn-pagerank",
+    "entryPoint" : "Main",
+    "payload" : "{}",
+    "memory"  : 256,
+    "duration" : 8
+  },
+  "up" : {
+    "language" : "java",
+    "benchmarkName" : "up",
+    "code" : "knative-jv/kn-uploader",
+    "entryPoint" : "Main",
+    "payload" : "{\"url\":\"http://172.18.0.1:8000/snap.png\",\"upload_url\":\"http://172.18.0.1:9696/upload\"}",
+    "memory"  : 512,
+    "duration" : 11
+  }
+}

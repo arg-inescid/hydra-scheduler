@@ -41,8 +41,8 @@ else
     echo "To run the experiment locally, please set the LOCAL_EXECUTION environment variable."
 fi
 
-WORKER_COUNT=100
-FIRST_PORT=50010
+WORKER_COUNT=40
+FIRST_PORT=30010
 
 
 function process_dataset {
@@ -74,26 +74,36 @@ EXECUTOR_TYPE=$3
 RESULTS_DIR=$4
 
 # Default paths
-LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/default-lambda-manager.json"
-LAMBDA_MANAGER_VARIABLES="$ARGO_HOME/run/configs/manager/default-variables.json"
+LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/default-lambda-manager.json"
+LAMBDA_MANAGER_VARIABLES="$ARGO_HOME/../argo/run/configs/manager/default-variables.json"
 
 
 if [[ "$MODE" = "gv" ]]; then
-    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/gv-lm.json"
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/gv-lm.json"
 elif [[ "$MODE" = "gv-fc" ]]; then
-    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/gv-lm.json"
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/gv-lm.json"
 elif [[ "$MODE" = "gv-sf" ]]; then
-    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/gv-lm.json"
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/gv-lm.json"
 elif [[ "$MODE" = "gv-si" ]]; then
-    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/gv-lm.json"
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/gv-lm.json"
 elif [[ "$MODE" = "ow" ]]; then
-    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/ow-lm.json"
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/ow-lm.json"
 elif [[ "$MODE" = "kn" ]]; then
-    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/kn-lm.json"
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/kn-lm.json"
 elif [[ "$MODE" = "gos" ]]; then
-    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/gos-lm.json"
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/gos-lm.json"
 elif [[ "$MODE" = "gos-native" ]]; then
-    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/gos-native-lm.json"
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/gos-native-lm.json"
+elif [[ "$MODE" = "faastion" ]]; then
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/faastion-lm.json"
+elif [[ "$MODE" = "faastlane" ]]; then
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/faastion-lm.json"
+elif [[ "$MODE" = "faastion-lpi" ]]; then
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/faastion-lm.json"
+elif [[ "$MODE" = "faastion-kn" ]]; then
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/faastion-lm.json"
+elif [[ "$MODE" = "faastion-ow" ]]; then
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/faastion-lm.json"
 else
     echo "Syntax: <mode> </path/to/dataset/directory> <executor-type>"
 	exit 1

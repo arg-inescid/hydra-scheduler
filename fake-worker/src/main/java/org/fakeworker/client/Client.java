@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class Client {
 
-    private static final String ADDRESS = "localhost:30009";
+    private static final String ADDRESS = "10.15.0.23:30009";
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
