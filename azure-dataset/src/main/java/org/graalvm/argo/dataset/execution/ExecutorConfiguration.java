@@ -33,8 +33,8 @@ public class ExecutorConfiguration {
         FunctionConfiguration[] javaConfigs;
         FunctionConfiguration[] javaScriptConfigs;
         FunctionConfiguration[] pythonConfigs;
-        if (Environment.GRAALVISOR_RUNTIME.equals(this.functionRuntime)) {
-            // Add function configs for Graalvisor.
+        if (Environment.HYDRA_RUNTIME.equals(this.functionRuntime)) {
+            // Add function configs for Hydra.
             javaConfigs = new FunctionConfiguration[] {
                     new FunctionConfiguration(Environment.JV_HELLOWORLD_NAME, Environment.GV_JV_HELLOWORLD_CODE, Environment.GV_JV_HELLOWORLD_ENTRYPOINT, Environment.JV_HELLOWORLD_PARAMETERS, Environment.JV_HELLOWORLD_MEMORY, Environment.GV_JV_SANDBOX),
                     new FunctionConfiguration(Environment.JV_FILEHASHING_NAME, Environment.GV_JV_FILEHASHING_CODE, Environment.GV_JV_FILEHASHING_ENTRYPOINT, Environment.JV_FILEHASHING_PARAMETERS, Environment.JV_FILEHASHING_MEMORY, Environment.GV_JV_SANDBOX),

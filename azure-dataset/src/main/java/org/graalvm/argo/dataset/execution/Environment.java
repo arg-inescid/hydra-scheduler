@@ -25,10 +25,10 @@ public class Environment {
     private static final String HOST_ADDRESS = "http://172.18.0.1:8000";
     private static final String URL_SNAP = "{\"url\":\"" + HOST_ADDRESS + "/snap.png\"}";
 
-    public static final String GRAALVISOR_RUNTIME = "graalvisor";
+    public static final String HYDRA_RUNTIME = "hydra";
     public static final String GRAALOS_RUNTIME = "graalos";
 
-    // Graalvisor benchmarks.
+    // Hydra benchmarks.
     // Python
     public static final String GV_PY_HELLOWORLD_CODE = ARGO_HOME_PATH + "/../benchmarks/src/python/gv-hello-world/build/libhelloworld.so";
     public static final String GV_PY_HELLOWORLD_ENTRYPOINT = "com.helloworld.HelloWorld";
@@ -111,7 +111,7 @@ public class Environment {
     public static final String JV_FILEHASHING_NAME = "jvfh";
     public static final String JV_HTTPREQUEST_NAME = "jvhr";
 
-    // Function sizes in MB (only matters for collocatable Graalvisor).
+    // Function sizes in MB (only matters for collocatable Hydra).
     // Python (NOTE: should be 512, but we simulate it to be of the same size)
     public static final int PY_HELLOWORLD_MEMORY = 256;
     public static final int PY_UPLOADER_MEMORY = 256;

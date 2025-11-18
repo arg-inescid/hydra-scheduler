@@ -57,15 +57,15 @@ LAMBDA_MANAGER_PORT=30009
 
 
 if [[ "$MODE" = "gv" ]]; then
-    FUNCTION_RUNTIME=graalvisor
+    FUNCTION_RUNTIME=hydra
     FUNCTION_ISOLATION=false
     INVOCATION_COLLOCATION=true
 elif [[ "$MODE" = "gv-sf" ]]; then
-    FUNCTION_RUNTIME=graalvisor
+    FUNCTION_RUNTIME=hydra
     FUNCTION_ISOLATION=true
     INVOCATION_COLLOCATION=true
 elif [[ "$MODE" = "gv-si" ]]; then
-    FUNCTION_RUNTIME=graalvisor
+    FUNCTION_RUNTIME=hydra
     FUNCTION_ISOLATION=true
     INVOCATION_COLLOCATION=false
 elif [[ "$MODE" = "ow" ]]; then
