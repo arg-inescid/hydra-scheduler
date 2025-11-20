@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Example usage of this script:
-# bash benchmark-lse-simulation.sh gv|gv-sf|gv-si|ow /path/to/dataset/file </path/to/results/folder>
+# bash benchmark-lse-simulation.sh hy|hy-sf|hy-si|ow /path/to/dataset/file </path/to/results/folder>
 # The structure of the .csv file should be as follows:
 # HashOwner HashFunction AverageAllocatedMb AverageDuration Timestamp
 #

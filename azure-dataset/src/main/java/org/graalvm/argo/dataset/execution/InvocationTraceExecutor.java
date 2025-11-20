@@ -97,14 +97,14 @@ public class InvocationTraceExecutor {
     }
 
     protected String getOwnerName(String ownerFromTrace) {
-        if ("gv-fc".equals(config.executionMode)) {
+        if ("hy-fc".equals(config.executionMode)) {
             return "user";
         }
         return ownerFromTrace;
     }
 
     protected String getFunctionName(String functionFromTrace, String benchmarkName) {
-        if ("gv".equals(config.executionMode) || "gv-fc".equals(config.executionMode)) {
+        if ("hy".equals(config.executionMode) || "hy-fc".equals(config.executionMode)) {
             // To avoid clashing SVM IDs when collocating different functions.
             return benchmarkName;
         }

@@ -46,4 +46,4 @@ This directory contains the scripts to run the large-scale experiment (abbreviat
 
 The `benchmark-lse-simulation.sh` script expects fake workers to be already created. 
 
-Usage of this script: `benchmark-lse-simulation.sh <gv|gv-sf|gv-si|ow> </path/to/trace.csv>`.
+Usage of this script: `benchmark-lse-simulation.sh <hy|hy-sf|hy-si|ow> </path/to/trace.csv>`.
