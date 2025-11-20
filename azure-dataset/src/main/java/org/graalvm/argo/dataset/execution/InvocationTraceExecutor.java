@@ -119,10 +119,10 @@ public class InvocationTraceExecutor {
                 " function_language=" + functionLanguage + " function_entry_point=" + benchmarkConfig.entryPoint +
                 " function_memory=" + benchmarkConfig.memory + " function_runtime=" + config.functionRuntime.toString() +
                 " function_isolation=" + config.functionIsolation + " invocation_collocation=" + config.invocationCollocation;
-        if (benchmarkConfig.gvSandbox != null) {
-            message = message + " gv_sandbox=" + benchmarkConfig.gvSandbox;
+        if (benchmarkConfig.hydraSandbox != null) {
+            message = message + " hydra_sandbox=" + benchmarkConfig.hydraSandbox;
             // For Python/JS functions that need sandbox snapshotting.
-            if ("snapshot".equals(benchmarkConfig.gvSandbox) && benchmarkConfig.svmId != null) {
+            if ("snapshot".equals(benchmarkConfig.hydraSandbox) && benchmarkConfig.svmId != null) {
                 message = message + " svm_id=" + benchmarkConfig.svmId;
             }
         }

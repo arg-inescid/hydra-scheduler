@@ -11,7 +11,7 @@ public class Benchmark {
     public String payload;
     public int memory;
     public int duration;
-    public String gvSandbox;
+    public String hydraSandbox;
     public String svmId;
 
     @Override
@@ -24,7 +24,7 @@ public class Benchmark {
                 ", payload='" + payload + '\'' +
                 ", memory=" + memory +
                 ", duration=" + duration +
-                ", gvSandbox='" + gvSandbox + '\'' +
+                ", hydraSandbox='" + hydraSandbox + '\'' +
                 ", svmId='" + svmId + '\'' +
                 '}';
     }
