@@ -218,12 +218,12 @@ public class MultiWorkerInvocationTraceExecutor extends InvocationTraceExecutor 
 
     private AbstractWorker schedule(String owner, String function, int invocationMemory) {
         AbstractWorker result = null;
-        for (AbstractWorker w : workers) {
-            if (w.canAccommodateRequest(owner, function, invocationMemory) && w.hasFunctionRegistered(owner, function)) {
-                result = w;
-                break;
-            }
-        }
+        // for (AbstractWorker w : workers) {
+        //     if (w.canAccommodateRequest(owner, function, invocationMemory) && w.hasFunctionRegistered(owner, function)) {
+        //         result = w;
+        //         break;
+        //     }
+        // }
         // if (result == null) {
         //     for (AbstractWorker w : workers) {
         //         if (w.canAccommodateRequest(owner, function, invocationMemory) && w.hasOwnerRegistered(owner)) {
@@ -232,13 +232,13 @@ public class MultiWorkerInvocationTraceExecutor extends InvocationTraceExecutor 
         //         }
         //     }
         // }
-        if (result == null) {
+        // if (result == null) {
             result = findLeastUtilized();
             if (!result.canAccommodateRequest(owner, function, invocationMemory)) {
                 overalloc++;
                 result = null;
             }
-        }
+        // }
         return result;
     }
 

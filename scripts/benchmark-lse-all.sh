@@ -58,35 +58,25 @@ RESULTS_DIR=/tmp/lse-results
 # bash $(DIR)/benchmark-lse.sh gos-native $DATASET_FILE --single $RESULTS_DIR
 # echo "Running GraalOS (native)... Finished!"
 
-# sleep 10
-
-# echo "Running Faastion..."
-# bash $(DIR)/benchmark-lse.sh faastion $DATASET_FILE --single $RESULTS_DIR
-# echo "Running Faastion... Finished!"
-
 sleep 10
 
-echo "Running Faastlane..."
-bash $(DIR)/benchmark-lse.sh faastlane $DATASET_FILE --single $RESULTS_DIR
-echo "Running Faastlane... Finished!"
-
-sleep 10
-
-echo "Running Faastion-LPI..."
-bash $(DIR)/benchmark-lse.sh faastion-lpi $DATASET_FILE --single $RESULTS_DIR
-echo "Running Faastion-LPI... Finished!"
-
-sleep 10
-
-echo "Running Faastion-KN..."
-bash $(DIR)/benchmark-lse.sh faastion-kn $DATASET_FILE --single $RESULTS_DIR
-echo "Running Faastion-KN... Finished!"
+echo "Running Faastion..."
+bash $(DIR)/benchmark-lse.sh faastion $DATASET_FILE --single $RESULTS_DIR
+echo "Running Faastion... Finished!"
 
 sleep 10
 
 echo "Running Faastion-OW..."
-bash $(DIR)/benchmark-lse.sh faastion-ow $DATASET_FILE --single $RESULTS_DIR
+#bash $(DIR)/benchmark-lse.sh faastion-openwhisk $DATASET_FILE --single $RESULTS_DIR
 echo "Running Faastion-OW... Finished!"
+
+sleep 10
+
+echo "Running Faastion-KN..."
+#bash $(DIR)/benchmark-lse.sh faastion-knative $DATASET_FILE --single $RESULTS_DIR
+echo "Running Faastion-KN... Finished!"
+
+sleep 10
 
 
 echo "Finished executing all modes, check your results directory ($RESULTS_DIR)!"

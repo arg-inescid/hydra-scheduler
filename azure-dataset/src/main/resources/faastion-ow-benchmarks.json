@@ -7,7 +7,7 @@
     "payload" : "{}",
     "memory"  : 2048,
     "duration" : 90,
-    "gvSandbox" : "context"
+    "gvSandbox" : "isolate"
   },
   "dh" : {
     "language" : "java",
@@ -17,7 +17,7 @@
     "payload" : "{}",
     "memory"  : 2048,
     "duration" : 85,
-    "gvSandbox" : "context"
+    "gvSandbox" : "isolate"
   },
   "bf" : {
     "language" : "java",
@@ -27,7 +27,7 @@
     "payload" : "{}",
     "memory"  : 256,
     "duration" : 25,
-    "gvSandbox" : "context"
+    "gvSandbox" : "isolate"
   },
   "co" : {
     "language" : "java",
@@ -37,7 +37,7 @@
     "payload" : "{}",
     "memory"  : 1024,
     "duration" : 100,
-    "gvSandbox" : "context"
+    "gvSandbox" : "isolate"
   },
   "ms" : {
     "language" : "java",
@@ -47,7 +47,7 @@
     "payload" : "{}",
     "memory"  : 256,
     "duration" : 24,
-    "gvSandbox" : "context"
+    "gvSandbox" : "isolate"
   },
   "pr" : {
     "language" : "java",
@@ -57,7 +57,7 @@
     "payload" : "{}",
     "memory"  : 256,
     "duration" : 27,
-    "gvSandbox" : "context"
+    "gvSandbox" : "isolate"
   },
   "th" : {
     "language" : "java",
@@ -67,7 +67,7 @@
     "payload" : "{}",
     "memory"  : 512,
     "duration" : 30,
-    "gvSandbox" : "context"
+    "gvSandbox" : "isolate"
   },
   "up" : {
     "language" : "java",
@@ -77,6 +77,6 @@
     "payload" : "{}",
     "memory"  : 512,
     "duration" : 115,
-    "gvSandbox" : "context"
+    "gvSandbox" : "isolate"
   }
 }

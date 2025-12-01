@@ -130,7 +130,7 @@ public class InvocationTraceExecutor {
         // Append path to the function as payload in ''.
         message = message + " '" + benchmarkConfig.code + "'";
         if (!config.isDebugMode()) {
-            SocketNetworkUtils.send(address, message, false, (s) -> {});
+            SocketNetworkUtils.send(address, message, true, (s) -> {});
         }
     }
 

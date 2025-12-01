@@ -2,64 +2,81 @@
   "dn" : {
     "language" : "java",
     "benchmarkName" : "dn",
-    "code" : "{{ARGO_HOME}}/../faastion/benchmarks/src/java/SeBS/gv-dna-visualization/build/libdna.so",
+    "code" : "http://172.18.0.1:8000/apps/libdna-plugin.zip",
     "entryPoint" : "com.dna.DNAVisualization",
     "payload" : "{}",
-    "memory"  : 512,
-    "duration" : 20
+    "memory"  : 2048,
+    "duration" : 90,
+    "gvSandbox" : "pku"
   },
   "dh" : {
     "language" : "java",
     "benchmarkName" : "dh",
-    "code" : "{{ARGO_HOME}}/../faastion/benchmarks/src/java/SeBS/gv-dynamic-html/build/libdynamic-html.so",
+    "code" : "http://172.18.0.1:8000/apps/libdynamic-html-plugin.zip",
     "entryPoint" : "com.dynamic_html.DynamicHTML",
     "payload" : "{}",
-    "memory"  : 512,
-    "duration" : 8
+    "memory"  : 2048,
+    "duration" : 85,
+    "gvSandbox" : "pku"
   },
   "bf" : {
     "language" : "java",
     "benchmarkName" : "bf",
-    "code" : "{{ARGO_HOME}}/../faastion/benchmarks/src/java/SeBS/gv-native-bfs/build/libbfs.so",
+    "code" : "http://172.18.0.1:8000/apps/libbfs-plugin.zip",
     "entryPoint" : "com.jni.BFS",
     "payload" : "{}",
     "memory"  : 256,
-    "duration" : 12
+    "duration" : 25,
+    "gvSandbox" : "pku"
   },
   "co" : {
     "language" : "java",
     "benchmarkName" : "co",
-    "code" : "{{ARGO_HOME}}/../faastion/benchmarks/src/java/SeBS/gv-native-compression/build/libzip.so",
+    "code" : "http://172.18.0.1:8000/apps/libzip-plugin.zip",
     "entryPoint" : "com.jni.ZIPCompression",
     "payload" : "{}",
     "memory"  : 1024,
-    "duration" : 18
+    "duration" : 100,
+    "gvSandbox" : "pku"
   },
   "ms" : {
     "language" : "java",
     "benchmarkName" : "ms",
-    "code" : "{{ARGO_HOME}}/../faastion/benchmarks/src/java/SeBS/gv-native-mst/build/libmst.so",
+    "code" : "http://172.18.0.1:8000/apps/libmst-plugin.zip",
     "entryPoint" : "com.jni.MST",
     "payload" : "{}",
     "memory"  : 256,
-    "duration" : 7
+    "duration" : 24,
+    "gvSandbox" : "pku"
   },
   "pr" : {
     "language" : "java",
     "benchmarkName" : "pr",
-    "code" : "{{ARGO_HOME}}/../faastion/benchmarks/src/java/SeBS/gv-native-pagerank/build/libpagerank.so",
+    "code" : "http://172.18.0.1:8000/apps/libpagerank-plugin.zip",
     "entryPoint" : "com.jni.PageRank",
     "payload" : "{}",
     "memory"  : 256,
-    "duration" : 8
+    "duration" : 27,
+    "gvSandbox" : "pku"
+  },
+  "th" : {
+    "language" : "java",
+    "benchmarkName" : "th",
+    "code" : "http://172.18.0.1:8000/apps/libthumbnail-plugin.zip",
+    "entryPoint" : "com.thumbnail.Thumbnail",
+    "payload" : "{}",
+    "memory"  : 512,
+    "duration" : 30,
+    "gvSandbox" : "pku"
   },
   "up" : {
     "language" : "java",
     "benchmarkName" : "up",
-    "code" : "{{ARGO_HOME}}/../faastion/benchmarks/src/java/SeBS/gv-uploader/build/libuploader.so",
+    "code" : "http://172.18.0.1:8000/apps/libuploader-plugin.zip",
     "entryPoint" : "com.uploader.Uploader",
     "payload" : "{}",
     "memory"  : 512,
-    "duration" : 11
+    "duration" : 115,
+    "gvSandbox" : "pku"
   }
 }

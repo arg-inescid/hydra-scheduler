@@ -8,8 +8,8 @@ public enum FunctionRuntime {
     KNATIVE("knative"),
 
     FAASTION("faastion"),
-    FAASTLANE("faastlane"),
-    FAASTION_LPI("faastion-lpi");
+    FAASTION_OPENWHISK("faastion-openwhisk"),
+    FAASTION_KNATIVE("faastion-knative");
 
     private final String runtime;
 

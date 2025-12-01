@@ -29,7 +29,7 @@ public class ExecutorConfiguration {
         this.functionIsolation = getFunctionIsolation(executionMode);
         this.debug = debug;
         this.lambdaManagerAddress = lambdaManagerAddress;
-        this.benchmarks = ConfigUtils.getBenchmarksConfig(getBenchmarkConfigFilename(this.functionRuntime, executionMode));
+        this.benchmarks = ConfigUtils.getBenchmarksConfig(getBenchmarkConfigFilename(this.functionRuntime));
         System.out.println("Loaded configs of " + this.benchmarks.size() + " benchmarks");
     }
 
@@ -56,22 +56,17 @@ public class ExecutorConfiguration {
             return FunctionRuntime.KNATIVE;
         } else if ("faastion".equals(executionMode)) {
             return FunctionRuntime.FAASTION;
-        } else if ("faastlane".equals(executionMode)) {
-            return FunctionRuntime.FAASTLANE;
-        } else if ("faastion-lpi".equals(executionMode)) {
-            return FunctionRuntime.FAASTION_LPI;
-        } else if ("faastion-kn".equals(executionMode)) {
-            return FunctionRuntime.KNATIVE;
-        } else if ("faastion-ow".equals(executionMode)) {
-            return FunctionRuntime.KNATIVE;
+        } else if ("faastion-openwhisk".equals(executionMode)) {
+            return FunctionRuntime.FAASTION_OPENWHISK;
+        } else if ("faastion-knative".equals(executionMode)) {
+            return FunctionRuntime.FAASTION_KNATIVE;
         }
         throw new IllegalArgumentException("Unsupported execution mode: " + executionMode);
     }
 
     private String getInvocationCollocation(String executionMode) {
         if ("gv".equals(executionMode) || "gv-sf".equals(executionMode) || "gv-fc".equals(executionMode) || "kn".equals(executionMode)
-        || "faastion".equals(executionMode) || "faastlane".equals(executionMode) || "faastion-lpi".equals(executionMode)
-        || "faastion-kn".equals(executionMode)) {
+        || "faastion".equals(executionMode) || "faastion-knative".equals(executionMode)) {
             return "true";
         }
         return "false";
@@ -84,7 +79,7 @@ public class ExecutorConfiguration {
         return "true";
     }
 
-    private String getBenchmarkConfigFilename(FunctionRuntime functionRuntime, String executionMode) {
+    private String getBenchmarkConfigFilename(FunctionRuntime functionRuntime) {
         switch (functionRuntime) {
             case GRAALVISOR:
                 return "gv-benchmarks.json";
@@ -93,17 +88,13 @@ public class ExecutorConfiguration {
             case GRAALOS:
                 return "gos-benchmarks.json";
             case KNATIVE:
-                if (executionMode.contains("faastion")) {
-                    return "faastion-kn-benchmarks.json";
-                } else {
-                    return "kn-benchmarks.json";
-                }
+                return "kn-benchmarks.json";
             case FAASTION:
                 return "faastion-benchmarks.json";
-            case FAASTLANE:
-                return "faastlane-benchmarks.json";
-            case FAASTION_LPI:
-                return "faastion-lpi-benchmarks.json";
+            case FAASTION_OPENWHISK:
+                return "faastion-ow-benchmarks.json";
+            case FAASTION_KNATIVE:
+                return "faastion-kn-benchmarks.json";
         }
         throw new IllegalArgumentException("Unsupported execution mode: " + functionRuntime);
     }

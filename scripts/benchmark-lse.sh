@@ -41,7 +41,7 @@ else
     echo "To run the experiment locally, please set the LOCAL_EXECUTION environment variable."
 fi
 
-WORKER_COUNT=40
+WORKER_COUNT=200
 FIRST_PORT=30010
 
 
@@ -96,13 +96,9 @@ elif [[ "$MODE" = "gos-native" ]]; then
     LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/gos-native-lm.json"
 elif [[ "$MODE" = "faastion" ]]; then
     LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/faastion-lm.json"
-elif [[ "$MODE" = "faastlane" ]]; then
+elif [[ "$MODE" = "faastion-knative" ]]; then
     LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/faastion-lm.json"
-elif [[ "$MODE" = "faastion-lpi" ]]; then
-    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/faastion-lm.json"
-elif [[ "$MODE" = "faastion-kn" ]]; then
-    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/faastion-lm.json"
-elif [[ "$MODE" = "faastion-ow" ]]; then
+elif [[ "$MODE" = "faastion-openwhisk" ]]; then
     LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/faastion-lm.json"
 else
     echo "Syntax: <mode> </path/to/dataset/directory> <executor-type>"
