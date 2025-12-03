@@ -114,11 +114,13 @@ public class InvocationTraceExecutor {
     public void uploadFunction(String address, String owner, String function, String benchmarkName) {
         Benchmark benchmarkConfig = config.getBenchmarkConfiguration(benchmarkName);
         FunctionLanguage functionLanguage = FunctionLanguage.fromString(benchmarkConfig.language);
+        // Enforcing no-colocation rule for Classify.
+        String invocationCollocationFinal = "cl".equals(benchmarkName) ? "false" : config.invocationCollocation;
 
         String message = "u username=" + owner + " function_name=" + function +
                 " function_language=" + functionLanguage + " function_entry_point=" + benchmarkConfig.entryPoint +
                 " function_memory=" + benchmarkConfig.memory + " function_runtime=" + config.functionRuntime.toString() +
-                " function_isolation=" + config.functionIsolation + " invocation_collocation=" + config.invocationCollocation +
+                " function_isolation=" + config.functionIsolation + " invocation_collocation=" + invocationCollocationFinal +
                 " benchmark_name=" + benchmarkName;
         if (benchmarkConfig.gvSandbox != null) {
             message = message + " gv_sandbox=" + benchmarkConfig.gvSandbox;

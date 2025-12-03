@@ -77,6 +77,7 @@ public class SocketConnection implements Closeable {
         // Write buffer contents to client.
         channel.write(buffer);
         buffer.clear();
+        System.out.println("[DEBUG] Sent " + msgBytes.length + "bytes: " + msg);
         return currentRequestId;
     }
 

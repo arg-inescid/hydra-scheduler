@@ -100,6 +100,8 @@ elif [[ "$MODE" = "faastion-knative" ]]; then
     LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/faastion-lm.json"
 elif [[ "$MODE" = "faastion-openwhisk" ]]; then
     LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/faastion-lm.json"
+elif [[ "$MODE" = "faastion-hydra" ]]; then
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/../argo/run/configs/manager/faastion-lm.json"
 else
     echo "Syntax: <mode> </path/to/dataset/directory> <executor-type>"
 	exit 1

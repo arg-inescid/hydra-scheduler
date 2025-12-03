@@ -11,14 +11,15 @@ public class BenchmarkDuration {
     static {
         benchmarks.put(FunctionLanguage.JAVA, new TreeMap<>());
 
+        addBenchmark(FunctionLanguage.JAVA, "cl", 280);
         addBenchmark(FunctionLanguage.JAVA, "dn", 90);
         addBenchmark(FunctionLanguage.JAVA, "dh", 85);
         addBenchmark(FunctionLanguage.JAVA, "bf", 25);
-//        addBenchmark(FunctionLanguage.JAVA, "co", 100);
+        addBenchmark(FunctionLanguage.JAVA, "co", 65);
         addBenchmark(FunctionLanguage.JAVA, "ms", 24);
         addBenchmark(FunctionLanguage.JAVA, "pr", 27);
-//        addBenchmark(FunctionLanguage.JAVA, "th", 30);
-        addBenchmark(FunctionLanguage.JAVA, "up", 115);
+        addBenchmark(FunctionLanguage.JAVA, "th", 55);
+        addBenchmark(FunctionLanguage.JAVA, "up", 145);
 
     }
 

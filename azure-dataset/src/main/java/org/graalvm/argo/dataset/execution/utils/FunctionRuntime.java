@@ -8,6 +8,7 @@ public enum FunctionRuntime {
     KNATIVE("knative"),
 
     FAASTION("faastion"),
+    FAASTION_HYDRA("faastion-hydra"),
     FAASTION_OPENWHISK("faastion-openwhisk"),
     FAASTION_KNATIVE("faastion-knative");
 

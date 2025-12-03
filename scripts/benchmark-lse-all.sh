@@ -67,14 +67,20 @@ echo "Running Faastion... Finished!"
 sleep 10
 
 echo "Running Faastion-OW..."
-#bash $(DIR)/benchmark-lse.sh faastion-openwhisk $DATASET_FILE --single $RESULTS_DIR
+bash $(DIR)/benchmark-lse.sh faastion-openwhisk $DATASET_FILE --single $RESULTS_DIR
 echo "Running Faastion-OW... Finished!"
 
 sleep 10
 
 echo "Running Faastion-KN..."
-#bash $(DIR)/benchmark-lse.sh faastion-knative $DATASET_FILE --single $RESULTS_DIR
+bash $(DIR)/benchmark-lse.sh faastion-knative $DATASET_FILE --single $RESULTS_DIR
 echo "Running Faastion-KN... Finished!"
+
+sleep 10
+
+echo "Running Faastion-Hydra..."
+bash $(DIR)/benchmark-lse.sh faastion-hydra $DATASET_FILE --single $RESULTS_DIR
+echo "Running Faastion-Hydra... Finished!"
 
 sleep 10
 

@@ -1,4 +1,14 @@
 {
+  "cl" : {
+    "language" : "java",
+    "benchmarkName" : "cl",
+    "code" : "http://172.18.0.1:8000/apps/libclassify-plugin.zip",
+    "entryPoint" : "com.classify.Classify",
+    "payload" : "{}",
+    "memory"  : 2048,
+    "duration" : 280,
+    "gvSandbox" : "pku"
+  },
   "dn" : {
     "language" : "java",
     "benchmarkName" : "dn",
@@ -36,7 +46,7 @@
     "entryPoint" : "com.jni.ZIPCompression",
     "payload" : "{}",
     "memory"  : 1024,
-    "duration" : 100,
+    "duration" : 65,
     "gvSandbox" : "pku"
   },
   "ms" : {
@@ -65,8 +75,8 @@
     "code" : "http://172.18.0.1:8000/apps/libthumbnail-plugin.zip",
     "entryPoint" : "com.thumbnail.Thumbnail",
     "payload" : "{}",
-    "memory"  : 512,
-    "duration" : 30,
+    "memory"  : 1024,
+    "duration" : 55,
     "gvSandbox" : "pku"
   },
   "up" : {
@@ -76,7 +86,7 @@
     "entryPoint" : "com.uploader.Uploader",
     "payload" : "{}",
     "memory"  : 512,
-    "duration" : 115,
+    "duration" : 145,
     "gvSandbox" : "pku"
   }
 }

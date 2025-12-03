@@ -56,6 +56,8 @@ public class ExecutorConfiguration {
             return FunctionRuntime.KNATIVE;
         } else if ("faastion".equals(executionMode)) {
             return FunctionRuntime.FAASTION;
+        } else if ("faastion-hydra".equals(executionMode)) {
+            return FunctionRuntime.FAASTION_HYDRA;
         } else if ("faastion-openwhisk".equals(executionMode)) {
             return FunctionRuntime.FAASTION_OPENWHISK;
         } else if ("faastion-knative".equals(executionMode)) {
@@ -66,7 +68,7 @@ public class ExecutorConfiguration {
 
     private String getInvocationCollocation(String executionMode) {
         if ("gv".equals(executionMode) || "gv-sf".equals(executionMode) || "gv-fc".equals(executionMode) || "kn".equals(executionMode)
-        || "faastion".equals(executionMode) || "faastion-knative".equals(executionMode)) {
+        || "faastion".equals(executionMode) || "faastion-hydra".equals(executionMode) || "faastion-knative".equals(executionMode)) {
             return "true";
         }
         return "false";
@@ -91,6 +93,7 @@ public class ExecutorConfiguration {
                 return "kn-benchmarks.json";
             case FAASTION:
                 return "faastion-benchmarks.json";
+            case FAASTION_HYDRA:
             case FAASTION_OPENWHISK:
                 return "faastion-ow-benchmarks.json";
             case FAASTION_KNATIVE:
