@@ -46,8 +46,8 @@ public class ExecutorConfiguration {
     }
 
     private FunctionRuntime getFunctionRuntime(String executionMode) {
-        if ("gv".equals(executionMode) || "gv-sf".equals(executionMode) || "gv-si".equals(executionMode) || "gv-fc".equals(executionMode)) {
-            return FunctionRuntime.GRAALVISOR;
+        if ("hy".equals(executionMode) || "hy-sf".equals(executionMode) || "hy-si".equals(executionMode) || "hy-fc".equals(executionMode)) {
+            return FunctionRuntime.HYDRA;
         } else if ("ow".equals(executionMode)) {
             return FunctionRuntime.OPENWHISK;
         } else if ("gos".equals(executionMode) || "gos-native".equals(executionMode)) {
@@ -59,14 +59,14 @@ public class ExecutorConfiguration {
     }
 
     private String getInvocationCollocation(String executionMode) {
-        if ("gv".equals(executionMode) || "gv-sf".equals(executionMode) || "gv-fc".equals(executionMode) || "kn".equals(executionMode)) {
+        if ("hy".equals(executionMode) || "hy-sf".equals(executionMode) || "hy-fc".equals(executionMode) || "kn".equals(executionMode)) {
             return "true";
         }
         return "false";
     }
 
     private String getFunctionIsolation(String executionMode) {
-        if ("gv".equals(executionMode) || "gv-fc".equals(executionMode)) {
+        if ("hy".equals(executionMode) || "hy-fc".equals(executionMode)) {
             return "false";
         }
         return "true";
@@ -74,8 +74,8 @@ public class ExecutorConfiguration {
 
     private String getBenchmarkConfigFilename(FunctionRuntime functionRuntime) {
         switch (functionRuntime) {
-            case GRAALVISOR:
-                return "gv-benchmarks.json";
+            case HYDRA:
+                return "hy-benchmarks.json";
             case OPENWHISK:
                 return "ow-benchmarks.json";
             case GRAALOS:

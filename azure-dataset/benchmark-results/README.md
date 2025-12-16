@@ -1,3 +1,7 @@
+### Note
+
+These instructions below, as well as the results in this directory, are outdated (generated in Sept 2022) and are kept only for archiving reasons.
+
 # Plot benchmark results
 
 In order to produce the plots from the results, just make sure that you have these files placed in

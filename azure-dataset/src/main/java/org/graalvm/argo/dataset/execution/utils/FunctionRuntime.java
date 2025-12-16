@@ -2,7 +2,7 @@ package org.graalvm.argo.dataset.execution.utils;
 
 public enum FunctionRuntime {
 
-    GRAALVISOR("graalvisor"),
+    HYDRA("hydra"),
     GRAALOS("graalos"),
     OPENWHISK("openwhisk"),
     KNATIVE("knative");
