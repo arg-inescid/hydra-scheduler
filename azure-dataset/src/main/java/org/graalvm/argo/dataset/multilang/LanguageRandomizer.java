@@ -25,9 +25,9 @@ import java.util.stream.Collectors;
 public class LanguageRandomizer {
 
     // Source: https://newrelic.com/resources/report/serverless-benchmark-report-aws-lambda-2020
-    private static final int JAVASCRIPT_PERC = 48; // 54
-    private static final int PYTHON_PERC = 24;     // 38
-    private static final int JAVA_PERC = 28;       // 8
+    private static final int JAVASCRIPT_PERC = 0; // 54
+    private static final int PYTHON_PERC = 0;     // 38
+    private static final int JAVA_PERC = 100;       // 8
 
     public static void main(String[] args) {
         Options options = prepareOptions();

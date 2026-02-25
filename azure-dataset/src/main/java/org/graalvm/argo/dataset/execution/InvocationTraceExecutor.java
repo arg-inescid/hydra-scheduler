@@ -126,6 +126,10 @@ public class InvocationTraceExecutor {
                 message = message + " svm_id=" + benchmarkConfig.svmId;
             }
         }
+	if (config.functionRuntime == FunctionRuntime.GRAALOS) {
+            message = message + " svm_id=" + benchmarkConfig.svmId;
+	}
+
         // Append path to the function as payload in ''.
         message = message + " '" + benchmarkConfig.code + "'";
         if (!config.isDebugMode()) {
