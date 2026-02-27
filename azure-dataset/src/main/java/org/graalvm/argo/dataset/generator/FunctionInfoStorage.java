@@ -14,15 +14,12 @@ public class FunctionInfoStorage {
     /* Key - function */
     public static final Map<String, Integer> DURATIONS = new HashMap<>();
     /* Key - function */
-    public static final Map<String, Integer> P99_DURATIONS = new HashMap<>(); // currently unused
-    /* Key - function */
     public static final Map<String, Integer> COMPRESSED_MAPPING = new HashMap<>();
     /* Key - app */
     public static final Map<String, Integer> MEMORIES = new HashMap<>();
 
     public static void fillFunctionData(String datasetId) {
         DURATIONS.clear();
-        P99_DURATIONS.clear();
         MEMORIES.clear();
         COMPRESSED_MAPPING.clear();
         fillDurations(datasetId);
@@ -44,8 +41,6 @@ public class FunctionInfoStorage {
                 String function = splitRow[2];
                 int averageDuration = Integer.parseInt(splitRow[3]);
                 DURATIONS.put(function, averageDuration);
-                int p99Duration = Integer.parseInt(splitRow[12]);
-                P99_DURATIONS.put(function, p99Duration);
             }
             br.close();
         } catch (IOException ioe) {
