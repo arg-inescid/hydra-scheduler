@@ -90,33 +90,10 @@ public class InvocationTraceGenerator {
             String currentInput = "/tmp/generator/sorted_trace.csv";
             String currentOutput = "/tmp/generator/temp_buffer.csv";
 
-            if (maxFunctions != 0) {
-                downscaleByFunctions(currentInput, currentOutput, maxFunctions);
-                currentInput = currentOutput; 
-                currentOutput = (currentInput.contains("buffer")) ? "/tmp/generator/temp_work.csv" : "/tmp/generator/temp_buffer.csv";
-                System.err.println("Finished downscaling to " + maxFunctions + " functions.");
-            }
-
-            if (maxConcInv != 0) {
-                downscaleByConcurrentInvocations(currentInput, currentOutput, maxConcInv);
-                currentInput = currentOutput;
-                currentOutput = (currentInput.contains("buffer")) ? "/tmp/generator/temp_work.csv" : "/tmp/generator/temp_buffer.csv";
-                System.err.println("Finished downscaling to " + maxConcInv + " concurrent invocations.");
-            }
-
-            if (maxUsers != 0) {
-                downscaleByUser(currentInput, currentOutput, maxUsers);
-                currentInput = currentOutput;
-                currentOutput = (currentInput.contains("buffer")) ? "/tmp/generator/temp_work.csv" : "/tmp/generator/temp_buffer.csv";
-                System.err.println("Finished downscaling to " + maxUsers + " users.");
-            }
-
-            if (maxMemory != 0) {
-                downscaleByMemory(currentInput, currentOutput, maxMemory);
-                currentInput = currentOutput;
-                currentOutput = (currentInput.contains("buffer")) ? "/tmp/generator/temp_work.csv" : "/tmp/generator/temp_buffer.csv";
-                System.err.println("Finished downscaling to " + maxMemory + " MB of memory.");
-            }
+            currentInput = runDownscaleStep(currentInput, getNextOutput(currentInput), maxFunctions, "functions", (in, out, limit) -> downscaleByFunctions(in, out, maxFunctions));
+            currentInput = runDownscaleStep(currentInput, getNextOutput(currentInput), maxConcInv, "concurrent invocations", (in, out, limit) -> downscaleByConcurrentInvocations(in, out, maxConcInv));
+            currentInput = runDownscaleStep(currentInput, getNextOutput(currentInput), maxUsers, "users", (in, out, limit) -> downscaleByUser(in, out, maxUsers));
+            currentInput = runDownscaleStep(currentInput, getNextOutput(currentInput), maxMemory, "MB of memory", (in, out, limit) -> downscaleByMemory(in, out, maxMemory));
 
             writeInvocationsToFile(currentInput, outputFilePath);
 
@@ -271,6 +248,28 @@ public class InvocationTraceGenerator {
             ioe.printStackTrace();
         }
         System.out.println("Finished sorting.");
+    }
+
+    /*
+     * Generic downscaling logic
+     */
+    @FunctionalInterface
+    interface Downscaler {
+        void perform(String input, String output, int limit) throws IOException;
+    }
+
+    private static String getNextOutput(String currentInput) {
+        return currentInput.contains("buffer") ? "/tmp/generator/temp_work.csv" : "/tmp/generator/temp_buffer.csv";
+    }
+
+    private static String runDownscaleStep(String input, String output, int limit, String label, Downscaler action) throws IOException {
+        if (limit <= 0) return input;
+
+        action.perform(input, output, limit);
+        System.err.println("Finished downscaling to " + limit + " " + label + ".");
+        
+        // Swap files
+        return output;
     }
 
     /* Remove invocations that go over the maximum number of concurrent invocations. */
