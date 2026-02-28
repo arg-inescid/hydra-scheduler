@@ -90,7 +90,6 @@ public class InvocationTraceGenerator {
             processDay(day, firstMinute, lastMinute);
 
             String currentInput = inputFilePath + ".sorted_trace.csv";
-            String currentOutput = inputFilePath + ".temp_buffer.csv";
 
             currentInput = runDownscaleStep(currentInput, getNextOutput(currentInput), maxFunctions, "functions", (in, out, limit) -> downscaleByFunctions(in, out, maxFunctions));
             currentInput = runDownscaleStep(currentInput, getNextOutput(currentInput), maxConcInv, "concurrent invocations", (in, out, limit) -> downscaleByConcurrentInvocations(in, out, maxConcInv));
