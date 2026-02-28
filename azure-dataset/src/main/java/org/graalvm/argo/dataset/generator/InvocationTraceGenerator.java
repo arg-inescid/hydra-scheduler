@@ -37,6 +37,7 @@ public class InvocationTraceGenerator {
     private static final Map<String, Integer> compressedOwnerMapping = new HashMap<>(2048);
     private static boolean compress = false;
     private static int skipped = 0;
+    private static String inputFilePath;
 
     private static Options prepareOptions() {
         Options options = new Options();
@@ -87,8 +88,8 @@ public class InvocationTraceGenerator {
             FunctionInfoStorage.fillFunctionData(day);
             processDay(day, firstMinute, lastMinute);
 
-            String currentInput = "/tmp/generator/sorted_trace.csv";
-            String currentOutput = "/tmp/generator/temp_buffer.csv";
+            String currentInput = inputFilePath + ".sorted_trace.csv";
+            String currentOutput = inputFilePath + ".temp_buffer.csv";
 
             currentInput = runDownscaleStep(currentInput, getNextOutput(currentInput), maxFunctions, "functions", (in, out, limit) -> downscaleByFunctions(in, out, maxFunctions));
             currentInput = runDownscaleStep(currentInput, getNextOutput(currentInput), maxConcInv, "concurrent invocations", (in, out, limit) -> downscaleByConcurrentInvocations(in, out, maxConcInv));
@@ -98,9 +99,9 @@ public class InvocationTraceGenerator {
             writeInvocationsToFile(currentInput, outputFilePath);
 
             /* Clear temporary files */
-            new File("/tmp/generator/sorted_trace.csv").delete();
-            new File("/tmp/generator/temp_work.csv").delete();
-            new File("/tmp/generator/temp_buffer.csv").delete();
+            new File(inputFilePath + ".sorted_trace.csv").delete();
+            new File(inputFilePath + ".temp_work.csv").delete();
+            new File(inputFilePath + ".temp_buffer.csv").delete();
         } catch (ParseException e) {
             System.out.println(e.getMessage());
             new HelpFormatter().printHelp("utility-name", options);
@@ -221,10 +222,10 @@ public class InvocationTraceGenerator {
      */
     private static void processDay(String datasetId, int firstMinute, int lastMinute) {
         try {
-            new File("/tmp/generator").mkdirs();
-            File file = new File("input/invocations_per_function_md.anon." + datasetId + ".csv");
+            inputFilePath = "input/invocations_per_function_md.anon." + datasetId + ".csv";
+            File file = new File(inputFilePath);
             BufferedReader br = new BufferedReader(new FileReader(file));
-            BufferedWriter bw = new BufferedWriter(new FileWriter("/tmp/generator/raw_unsorted_trace.csv", false));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(inputFilePath + ".raw_unsorted_trace.csv", false));
             String line;
             br.readLine(); // To skip the header
             int fcounter = 1;
@@ -242,8 +243,8 @@ public class InvocationTraceGenerator {
 
         /* At this point, we have the unordered list of all invocations */
         try {
-            ExternalTraceSorter.sortTraceByTimestamp("/tmp/generator/raw_unsorted_trace.csv", "/tmp/generator/sorted_trace.csv", false);
-            new File("/tmp/generator/raw_unsorted_trace.csv").delete();
+            ExternalTraceSorter.sortTraceByTimestamp(inputFilePath + ".raw_unsorted_trace.csv", inputFilePath + ".sorted_trace.csv", false);
+            new File(inputFilePath + ".raw_unsorted_trace.csv").delete();
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
@@ -259,7 +260,7 @@ public class InvocationTraceGenerator {
     }
 
     private static String getNextOutput(String currentInput) {
-        return currentInput.contains("buffer") ? "/tmp/generator/temp_work.csv" : "/tmp/generator/temp_buffer.csv";
+        return currentInput.contains("buffer") ? inputFilePath + ".temp_work.csv" : inputFilePath + ".temp_buffer.csv";
     }
 
     private static String runDownscaleStep(String input, String output, int limit, String label, Downscaler action) throws IOException {
