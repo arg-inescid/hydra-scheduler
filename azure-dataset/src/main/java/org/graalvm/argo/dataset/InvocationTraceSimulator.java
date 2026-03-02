@@ -124,7 +124,7 @@ public class InvocationTraceSimulator {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
         // Final update to statistics.
         statistics.add(updateStatistics(ss.activeInvocations, ss.runningInvocations(), ss));
 

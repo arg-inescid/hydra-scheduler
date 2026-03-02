@@ -163,8 +163,6 @@ public class InvocationTraceGenerator {
         String owner = splitRow[0];
         String app = splitRow[1];
         String function = splitRow[2];
-        String compressedFunctionHash = function;
-        String compressedOwnerHash = owner;
 
         /* If there is no record about this function about avg duration or memory, then skip */
         if (!FunctionInfoStorage.DURATIONS.containsKey(function) || !FunctionInfoStorage.MEMORIES.containsKey(app)) {
@@ -172,15 +170,17 @@ public class InvocationTraceGenerator {
             return;
         }
 
-        if (compress) {
-            compressedOwnerMapping.computeIfAbsent(owner, k -> compressedOwnerMapping.size());
-            compressedOwnerHash = compressedOwnerMapping.get(owner).toString();
-            FunctionInfoStorage.COMPRESSED_MAPPING.computeIfAbsent(function, k -> FunctionInfoStorage.COMPRESSED_MAPPING.size());
-            compressedFunctionHash = FunctionInfoStorage.COMPRESSED_MAPPING.get(function).toString();
-        }
-
         int memory = FunctionInfoStorage.MEMORIES.get(app);
         int duration = FunctionInfoStorage.DURATIONS.get(function);
+
+        if (compress) {
+            compressedOwnerMapping.computeIfAbsent(owner, k -> compressedOwnerMapping.size());
+            FunctionInfoStorage.COMPRESSED_MAPPING.computeIfAbsent(function, k -> FunctionInfoStorage.COMPRESSED_MAPPING.size());
+            // use compressed mappings
+            owner = compressedOwnerMapping.get(owner).toString();
+            function = FunctionInfoStorage.COMPRESSED_MAPPING.get(function).toString();
+        }
+
         int currentMinute = firstMinute;
         int invocationCount = 0;
         while (currentMinute <= lastMinute) {
@@ -191,8 +191,8 @@ public class InvocationTraceGenerator {
             for (int i = 0; i < invocationsForMinute; ++i) {
                 int timestamp = ThreadLocalRandom.current().nextInt(minBeginningMs, minEndMs);
                 String csvLine = String.join(",", 
-                    compressedOwnerHash, 
-                    compressedFunctionHash, 
+                    owner, 
+                    function, 
                     String.valueOf(memory), 
                     String.valueOf(duration), 
                     String.valueOf(timestamp)
@@ -207,10 +207,10 @@ public class InvocationTraceGenerator {
             ++currentMinute;
         }
         if (invocationCount > 0) {
-            if (!owners.containsKey(compressedOwnerHash)) {
-                owners.put(compressedOwnerHash, new Owner(compressedOwnerHash));
+            if (!owners.containsKey(owner)) {
+                owners.put(owner, new Owner(owner));
             }
-            Owner currentOwner = owners.get(compressedOwnerHash);
+            Owner currentOwner = owners.get(owner);
             currentOwner.addFunction(function);
             currentOwner.addInvocations(invocationCount);
         }
