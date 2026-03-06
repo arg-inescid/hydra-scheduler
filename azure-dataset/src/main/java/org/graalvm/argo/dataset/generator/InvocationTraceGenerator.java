@@ -244,13 +244,20 @@ public class InvocationTraceGenerator {
             System.out.println("Skipped " + skipped + " functions due to lack of information.");
             bw.close();
             br.close();
+        } catch(IOException ioe) {
+            ioe.printStackTrace();
+            new File(inputFilePath + UNSORTED_FILE_SUFFIX).delete();
+            System.exit(1);
+        }
 
-            /* At this point, we have the unordered list of all invocations */
+        /* At this point, we have the unordered list of all invocations */
+        try {
             ExternalTraceSorter.sortTraceByTimestamp(inputFilePath + UNSORTED_FILE_SUFFIX, inputFilePath + SORTED_FILE_SUFFIX, false);
             System.out.println("Finished sorting.");
             new File(inputFilePath + UNSORTED_FILE_SUFFIX).delete();
-        } catch(IOException ioe) {
+        } catch (IOException ioe) {
             ioe.printStackTrace();
+            new File(inputFilePath + SORTED_FILE_SUFFIX).delete();
             new File(inputFilePath + UNSORTED_FILE_SUFFIX).delete();
             System.exit(1);
         }
