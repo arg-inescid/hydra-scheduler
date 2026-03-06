@@ -33,6 +33,10 @@ import org.graalvm.argo.dataset.utils.ExternalTraceSorter;
 public class InvocationTraceGenerator {
 
     public static final String DELIMITER = ",";
+    private static final String UNSORTED_FILE_SUFFIX = ".raw_unsorted_trace.csv";
+    private static final String SORTED_FILE_SUFFIX = ".sorted_trace.csv";
+    private static final String TEMP_BUFFER_SUFFIX = ".temp_buffer.csv";
+    private static final String TEMP_WORK_SUFFIX = ".temp_work.csv";
     private static final int MINUTES_COLUMN_OFFSET = 3;
     private static final Map<String, Owner> owners = new HashMap<>(2048);
     private static final Map<String, Integer> compressedOwnerMapping = new HashMap<>(2048);
@@ -89,7 +93,7 @@ public class InvocationTraceGenerator {
             FunctionInfoStorage.fillFunctionData(day);
             processDay(day, firstMinute, lastMinute);
 
-            String currentInput = inputFilePath + ".sorted_trace.csv";
+            String currentInput = inputFilePath + SORTED_FILE_SUFFIX;
 
             currentInput = runDownscaleStep(currentInput, getNextOutput(currentInput), maxFunctions, "functions", (in, out, limit) -> downscaleByFunctions(in, out, maxFunctions));
             currentInput = runDownscaleStep(currentInput, getNextOutput(currentInput), maxConcInv, "concurrent invocations", (in, out, limit) -> downscaleByConcurrentInvocations(in, out, maxConcInv));
@@ -99,9 +103,9 @@ public class InvocationTraceGenerator {
             writeInvocationsToFile(currentInput, outputFilePath);
 
             /* Clear temporary files */
-            new File(inputFilePath + ".sorted_trace.csv").delete();
-            new File(inputFilePath + ".temp_work.csv").delete();
-            new File(inputFilePath + ".temp_buffer.csv").delete();
+            new File(inputFilePath + SORTED_FILE_SUFFIX).delete();
+            new File(inputFilePath + TEMP_WORK_SUFFIX).delete();
+            new File(inputFilePath + TEMP_BUFFER_SUFFIX).delete();
         } catch (ParseException e) {
             System.out.println(e.getMessage());
             new HelpFormatter().printHelp("utility-name", options);
@@ -183,29 +187,32 @@ public class InvocationTraceGenerator {
 
         int currentMinute = firstMinute;
         int invocationCount = 0;
-        while (currentMinute <= lastMinute) {
-            int invocationsForMinute = Integer.parseInt(splitRow[currentMinute + MINUTES_COLUMN_OFFSET]);
-            invocationCount += invocationsForMinute;
-            int minBeginningMs = (currentMinute - 1) * 60000;
-            int minEndMs = minBeginningMs + 60000;
-            for (int i = 0; i < invocationsForMinute; ++i) {
-                int timestamp = ThreadLocalRandom.current().nextInt(minBeginningMs, minEndMs);
-                String csvLine = String.join(",", 
-                    owner, 
-                    function, 
-                    String.valueOf(memory), 
-                    String.valueOf(duration), 
-                    String.valueOf(timestamp)
-                );
-                try {
+        try {
+            while (currentMinute <= lastMinute) {
+                int invocationsForMinute = Integer.parseInt(splitRow[currentMinute + MINUTES_COLUMN_OFFSET]);
+                invocationCount += invocationsForMinute;
+                int minBeginningMs = (currentMinute - 1) * 60000;
+                int minEndMs = minBeginningMs + 60000;
+                for (int i = 0; i < invocationsForMinute; ++i) {
+                    int timestamp = ThreadLocalRandom.current().nextInt(minBeginningMs, minEndMs);
+                    String csvLine = String.join(",", 
+                        owner, 
+                        function, 
+                        String.valueOf(memory), 
+                        String.valueOf(duration), 
+                        String.valueOf(timestamp)
+                    );
                     bw.write(csvLine);
                     bw.newLine();
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
                 }
+                ++currentMinute;
             }
-            ++currentMinute;
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            new File(inputFilePath + UNSORTED_FILE_SUFFIX).delete();
+            System.exit(1);
         }
+
         if (invocationCount > 0) {
             if (!owners.containsKey(owner)) {
                 owners.put(owner, new Owner(owner));
@@ -225,7 +232,7 @@ public class InvocationTraceGenerator {
             inputFilePath = "input/invocations_per_function_md.anon." + datasetId + ".csv";
             File file = new File(inputFilePath);
             BufferedReader br = new BufferedReader(new FileReader(file));
-            BufferedWriter bw = new BufferedWriter(new FileWriter(inputFilePath + ".raw_unsorted_trace.csv", false));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(inputFilePath + UNSORTED_FILE_SUFFIX, false));
             String line;
             br.readLine(); // To skip the header
             int fcounter = 1;
@@ -237,30 +244,28 @@ public class InvocationTraceGenerator {
             System.out.println("Skipped " + skipped + " functions due to lack of information.");
             bw.close();
             br.close();
+
+            /* At this point, we have the unordered list of all invocations */
+            ExternalTraceSorter.sortTraceByTimestamp(inputFilePath + UNSORTED_FILE_SUFFIX, inputFilePath + SORTED_FILE_SUFFIX, false);
+            System.out.println("Finished sorting.");
+            new File(inputFilePath + UNSORTED_FILE_SUFFIX).delete();
         } catch(IOException ioe) {
             ioe.printStackTrace();
+            new File(inputFilePath + UNSORTED_FILE_SUFFIX).delete();
+            System.exit(1);
         }
-
-        /* At this point, we have the unordered list of all invocations */
-        try {
-            ExternalTraceSorter.sortTraceByTimestamp(inputFilePath + ".raw_unsorted_trace.csv", inputFilePath + ".sorted_trace.csv", false);
-            new File(inputFilePath + ".raw_unsorted_trace.csv").delete();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-        System.out.println("Finished sorting.");
     }
 
     /*
      * Generic downscaling logic
      */
     @FunctionalInterface
-    interface Downscaler {
+    private interface Downscaler {
         void perform(String input, String output, int limit) throws IOException;
     }
 
     private static String getNextOutput(String currentInput) {
-        return currentInput.contains("buffer") ? inputFilePath + ".temp_work.csv" : inputFilePath + ".temp_buffer.csv";
+        return currentInput.contains("buffer") ? inputFilePath + TEMP_WORK_SUFFIX : inputFilePath + TEMP_BUFFER_SUFFIX;
     }
 
     private static String runDownscaleStep(String input, String output, int limit, String label, Downscaler action) throws IOException {
