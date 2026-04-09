@@ -13,12 +13,15 @@ public class FunctionInfoStorage {
 
     /* Key - function */
     public static final Map<String, Integer> DURATIONS = new HashMap<>();
+    /* Key - function */
+    public static final Map<String, Integer> COMPRESSED_MAPPING = new HashMap<>();
     /* Key - app */
     public static final Map<String, Integer> MEMORIES = new HashMap<>();
 
     public static void fillFunctionData(String datasetId) {
         DURATIONS.clear();
         MEMORIES.clear();
+        COMPRESSED_MAPPING.clear();
         fillDurations(datasetId);
         fillMemories(datasetId);
     }
