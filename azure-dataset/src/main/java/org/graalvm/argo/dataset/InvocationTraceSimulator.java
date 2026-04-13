@@ -7,8 +7,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -56,7 +58,7 @@ public class InvocationTraceSimulator {
     protected Invocation findWarmInvocation(TreeSet<? extends Invocation> activeInvocations, int timestamp, String function) {
         for (Invocation invocation : activeInvocations) {
             if (timestamp < invocation.getEndTimestamp()) {
-                continue;
+                break;
             } else if (invocation.getFunction().equals(function)) {
                 return invocation;
             }
@@ -72,15 +74,43 @@ public class InvocationTraceSimulator {
         outputEntry.timestamp = ss.currentTimestamp;
         outputEntry.invocationsProcessed = ss.invocationsProcessed - ss.lastInvocationsProcessed;
         outputEntry.coldStarts = ss.coldStarts;
-        outputEntry.runningUsers = (int) runningInvocations.parallelStream().map(Invocation::getOwner).distinct().count();
-        outputEntry.runningFunctions  = (int) runningInvocations.parallelStream().map(Invocation::getFunction).distinct().count();
-        outputEntry.runningInvocations = runningInvocations.size();
-        outputEntry.runningInvocationsFootprint = (int) runningInvocations.parallelStream().mapToInt(Invocation::getMemory).sum();
-        int totalUsers = (int) activeInvocations.parallelStream().map(Invocation::getOwner).distinct().count();
-        int totalFunctions = (int) activeInvocations.parallelStream().map(Invocation::getFunction).distinct().count();
-        outputEntry.cachedUsers = totalUsers - outputEntry.runningUsers;
-        outputEntry.cachedFunctions = totalFunctions - outputEntry.runningFunctions;
-        outputEntry.cachedInvocationsFootprint = activeInvocations.parallelStream().filter(i -> i.getEndTimestamp() < ss.currentTimestamp).mapToInt(Invocation::getMemory).sum();
+
+        Set<String> runningUsers = new HashSet<>();
+        Set<String> runningFunctions = new HashSet<>();
+        Set<String> totalUsers = new HashSet<>();
+        Set<String> totalFunctions = new HashSet<>();
+
+        int runningMemSum = 0;
+        int cachedMemSum = 0;
+        int runningInvocationsCount = 0;
+        
+        for (Invocation invocation : activeInvocations) {
+            String owner = invocation.getOwner();
+            String function = invocation.getFunction();
+            int memory = invocation.getMemory();
+
+            totalUsers.add(owner);
+            totalFunctions.add(function);
+
+            if (invocation.getEndTimestamp() > ss.currentTimestamp) {
+                runningInvocationsCount++;
+                runningMemSum += memory;
+                runningUsers.add(owner);
+                runningFunctions.add(function);
+            } else {
+                cachedMemSum += memory;
+            }
+        }
+
+        outputEntry.runningInvocations = runningInvocationsCount;
+        outputEntry.runningUsers = runningUsers.size();
+        outputEntry.runningFunctions = runningFunctions.size();
+        outputEntry.runningInvocationsFootprint = runningMemSum;
+
+        outputEntry.cachedUsers = totalUsers.size() - outputEntry.runningUsers;
+        outputEntry.cachedFunctions = totalFunctions.size() - outputEntry.runningFunctions;
+        outputEntry.cachedInvocationsFootprint = cachedMemSum;
+
         return outputEntry;
     }
 
