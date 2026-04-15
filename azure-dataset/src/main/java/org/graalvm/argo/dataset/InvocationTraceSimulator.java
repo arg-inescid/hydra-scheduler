@@ -13,7 +13,6 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 /**
  * This class loads an invocation trace and replays each invocation, one at a
@@ -24,22 +23,6 @@ public class InvocationTraceSimulator {
 
     protected Invocation createInvocation(String owner, String function, int memory, int duration, int timestamp) {
         return new Invocation(owner, function, memory, duration, timestamp);
-    }
-
-    protected List<Invocation> loadInvocations(String invocationsFile) {
-        List<Invocation> invocations = new LinkedList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(invocationsFile))) {
-            String line;
-            String[] splitRow;
-            br.readLine(); // To skip the header
-            while ((line = br.readLine()) != null) {
-                splitRow = line.split(InvocationTraceGenerator.DELIMITER);
-                invocations.add(createInvocation(splitRow[0], splitRow[1], Integer.valueOf(splitRow[2]), Integer.valueOf(splitRow[3]), Integer.valueOf(splitRow[4])));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return invocations;
     }
 
     protected void evictTimedOutInvocations(SimulationState ss, int timestamp, int keepalive) {
