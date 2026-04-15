@@ -3,8 +3,10 @@ package org.graalvm.argo.dataset;
 import org.graalvm.argo.dataset.generator.InvocationTraceGenerator;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Iterator;
@@ -128,8 +130,13 @@ public class InvocationTraceSimulator {
     protected List<OutputEntry> simulateInvocations(String inputFile, SimulationState ss, int keepalive, int interval) {
         List<OutputEntry> statistics = new LinkedList<>();
 
-        try (BufferedReader br = new BufferedReader(new FileReader(inputFile))) {
-            long totalLines = Files.lines(Paths.get(inputFile)).count() - 1;
+        try (FileInputStream fis = new FileInputStream(inputFile);
+             FileChannel channel = fis.getChannel();
+             BufferedReader br = new BufferedReader(new InputStreamReader(fis))) {
+            
+            long fileSize = Files.size(Paths.get(inputFile));
+            int lastPrintedPercent = 0;
+
             String line;
             br.readLine(); // Skip header
             
@@ -140,8 +147,10 @@ public class InvocationTraceSimulator {
 
                 processInvocation(statistics, currentInvocation, ss, keepalive, interval);
 
-                if (ss.invocationsProcessed % Math.max(totalLines / 100, 1) == 0) {
-                    System.err.println(String.format("Processed %d (%.2f %%)", ss.invocationsProcessed, ((float) ss.invocationsProcessed / totalLines * 100)));
+                int progress = (int) (channel.position() * 100 / fileSize);
+                if (progress > lastPrintedPercent) {
+                    lastPrintedPercent = progress;
+                    System.err.println(String.format("Processed %d (%.2f %%)", ss.invocationsProcessed, (float) progress));
                 }
             }
         } catch (IOException e) {
