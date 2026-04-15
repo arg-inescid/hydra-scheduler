@@ -7,10 +7,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -41,29 +42,38 @@ public class InvocationTraceSimulator {
         return invocations;
     }
 
-    protected void evictTimedOutInvocations(TreeSet<? extends Invocation> activeInvocations, int timestamp, int keepalive) {
-        List<Invocation> evict = new LinkedList<>();
-        for (Invocation invocation : activeInvocations) {
-            if (timestamp >= invocation.getEndTimestamp() + keepalive) {
-                evict.add(invocation);
+    protected void evictTimedOutInvocations(SimulationState ss, int timestamp, int keepalive) {
+        Iterator<Invocation> it = ss.activeInvocations.iterator();
+        while (it.hasNext()) {
+            Invocation inv = it.next();
+            if (timestamp >= inv.getEndTimestamp() + keepalive) {
+                it.remove();
+                TreeSet<Invocation> bucket = ss.invocationsByFunction.get(inv.getFunction());
+                if (bucket != null) {
+                    bucket.remove(inv);
+                    if (bucket.isEmpty()) {
+                        ss.invocationsByFunction.remove(inv.getFunction());
+                    }
+                }
             } else {
                 // The activeInvocations tree is ordered. If we fail the above check, later elements will also fail.
                 break;
             }
         }
-        activeInvocations.removeAll(evict);
     }
 
-    // TODO - for these, I don't see a clear reason not to doit in a stream.
-    protected Invocation findWarmInvocation(TreeSet<? extends Invocation> activeInvocations, int timestamp, String function) {
-        for (Invocation invocation : activeInvocations) {
-            if (timestamp < invocation.getEndTimestamp()) {
-                break;
-            } else if (invocation.getFunction().equals(function)) {
-                return invocation;
-            }
+    protected Invocation findWarmInvocation(SimulationState ss, int timestamp, String function) {
+        TreeSet<Invocation> bucket = ss.invocationsByFunction.get(function);
+        if (bucket == null || bucket.isEmpty()) {
+            return null;
         }
-        return null;
+
+        Invocation candidate = bucket.first(); // smallest endTimestamp for function
+        if (candidate.getEndTimestamp() <= timestamp) {
+            return candidate;
+        } else {
+            return null;
+        }
     }
 
     protected OutputEntry updateStatistics(TreeSet<Invocation> activeInvocations, List<Invocation> runningInvocations, SimulationState ss) {
@@ -124,7 +134,7 @@ public class InvocationTraceSimulator {
         if (warm == null) {
             ss.coldStarts++;
         } else {
-            ss.activeInvocations.remove(warm);
+            ss.removeInvocation(warm);
         }
     }
 
@@ -169,14 +179,14 @@ public class InvocationTraceSimulator {
         ss.currentTimestamp = currentInvocation.getTimestamp();
 
         // Remove invocations that have past their keep alive time.
-        evictTimedOutInvocations(ss.activeInvocations, ss.currentTimestamp, keepalive);
+        evictTimedOutInvocations(ss, ss.currentTimestamp, keepalive);
 
         // We try to find an inactive invocation that can be replaced with the new one.
-        Invocation warm = findWarmInvocation(ss.activeInvocations, ss.currentTimestamp, currentInvocation.getFunction());
+        Invocation warm = findWarmInvocation(ss, ss.currentTimestamp, currentInvocation.getFunction());
         updateAfterWarmCheck(ss, currentInvocation, warm);
 
         // Add invocation to array of active invocations.
-        ss.activeInvocations.add(currentInvocation);
+        ss.addInvocation(currentInvocation);
         ss.invocationsProcessed++;
 
         if (ss.currentTimestamp - ss.previousTimestamp > interval) {
