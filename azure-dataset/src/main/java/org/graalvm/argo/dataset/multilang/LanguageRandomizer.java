@@ -46,12 +46,12 @@ public class LanguageRandomizer {
     }
 
     private static void processLanguages(String inputFilePath, String outputFilePath, boolean mappings) {
-        List<Invocation> invocations = getInvocations(inputFilePath);
-        Map<String, FunctionRecord> languagesFunction = getLanguages(invocations);
+        Map<String, FunctionRecord> languagesFunction = getLanguages(inputFilePath);
         if (mappings) {
             writeMappingsToFile(languagesFunction, outputFilePath);
         } else {
-            writeInvocationsToFile(invocations, languagesFunction, outputFilePath);
+            // TODO - fix...
+            writeInvocationsToFile(null, languagesFunction, outputFilePath);
         }
     }
 
@@ -81,17 +81,42 @@ public class LanguageRandomizer {
         }
     }
 
-    private static Map<String, FunctionRecord> getLanguages(List<Invocation> invocations) {
-        int invocationsNumber = invocations.size();
+    private static Map<String, FunctionRecord> getLanguages(String inputFilePath) {
         Map<String, FunctionRecord> result = new HashMap<>();
+        int invocationsNumber = 0;
 
         // Extracting the mapping Function->Duration.
-        Map<String, Integer> functionDurations = invocations.stream()
-                .collect(Collectors.toMap(Invocation::getFunction, Invocation::getDuration, (existing, replacement) -> existing));
+        Map<String, Long> functionDurations = new HashMap<>();
 
         // Extracting the mapping Function->InvocationCount.
-        Map<String, Long> functionInvocations = invocations.stream()
-                .collect(Collectors.groupingBy(Invocation::getFunction, Collectors.counting()));
+        Map<String, Long> functionInvocations = new HashMap<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(inputFilePath))) {
+            br.readLine(); // To skip the header
+            for (String line = br.readLine(); line != null; line = br.readLine()) {
+                String[] splitRow = line.split(InvocationTraceGenerator.DELIMITER);
+                String function = splitRow[1];
+                long duration = Long.parseLong(splitRow[3]);
+
+                if (!functionDurations.containsKey(function)) {
+                    functionDurations.put(function, duration);
+                    // Assume both mapths are updated at the same time.
+                    functionInvocations.put(function, 1L);
+                } else {
+                    functionInvocations.put(function, functionInvocations.get(function) + 1);
+                }
+
+                // Increment the total number of invocations.
+                invocationsNumber += 1;
+                if (invocationsNumber % 1000_000 == 0) {
+                    System.out.println(String.format("Processed %d invocations", invocationsNumber));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // List with mappings Function->InvocationCount (derived from functionInvocations).
         List<Map.Entry<String, Long>> functionsList = new ArrayList<>(functionInvocations.entrySet());
         Collections.shuffle(functionsList);
 
@@ -101,7 +126,7 @@ public class LanguageRandomizer {
         int jvThreshold = (int) (invocationsNumber * ((double) JAVA_PERC / 100)) + pyThreshold;
         for (Map.Entry<String, Long> functionEntry : functionsList) {
             currentInvocationsNumber += functionEntry.getValue();
-            int duration = functionDurations.get(functionEntry.getKey());
+            int duration = functionDurations.get(functionEntry.getKey()).intValue();
 
             FunctionLanguage language;
             if (currentInvocationsNumber <= jsThreshold) {
@@ -129,27 +154,6 @@ public class LanguageRandomizer {
         System.out.println("Number of JS functions: " + collected.get(FunctionLanguage.JAVASCRIPT));
         System.out.println("Number of PY functions: " + collected.get(FunctionLanguage.PYTHON));
         System.out.println("Number of JV functions: " + collected.get(FunctionLanguage.JAVA));
-    }
-
-    private static List<Invocation> getInvocations(String inputFilePath) {
-        List<Invocation> invocations = new LinkedList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(inputFilePath))) {
-            String line;
-            String[] splitRow;
-            br.readLine(); // To skip the header
-            while ((line = br.readLine()) != null) {
-                splitRow = line.split(InvocationTraceGenerator.DELIMITER);
-                String owner = splitRow[0];
-                String function = splitRow[1];
-                int allocatedMemoryMb = Integer.parseInt(splitRow[2]);
-                int duration = Integer.parseInt(splitRow[3]);
-                int timestamp = Integer.parseInt(splitRow[4]);
-                invocations.add(new Invocation(owner, function, allocatedMemoryMb, duration, timestamp));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return invocations;
     }
 
     private static Options prepareOptions() {
