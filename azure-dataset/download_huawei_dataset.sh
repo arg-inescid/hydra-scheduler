@@ -11,11 +11,10 @@ mkdir -p "$DOWNLOAD_DIR"
 # requests_minute: 1W9dQvqRGylfUeHJcYqWwJrpYHIsYCVq_
 # function_delay_minute: 1Ooentp5nUeC2qKig8QSvJAaRgk3Kix_v
 # memory_limit_minute: 1COvoR8VwQnwxstOHuJj_YjlSaMv_jDLT
-
-declare -A FILES=(
-  [requests_minute]="1W9dQvqRGylfUeHJcYqWwJrpYHIsYCVq_"
-  [function_delay_minute]="1Ooentp5nUeC2qKig8QSvJAaRgk3Kix_v"
-  [memory_limit_minute]="1COvoR8VwQnwxstOHuJj_YjlSaMv_jDLT"
+FILES=(
+  "requests_minute:1W9dQvqRGylfUeHJcYqWwJrpYHIsYCVq_"
+  "function_delay_minute:1Ooentp5nUeC2qKig8QSvJAaRgk3Kix_v"
+  "memory_limit_minute:1COvoR8VwQnwxstOHuJj_YjlSaMv_jDLT"
 )
 
 command -v gdown >/dev/null 2>&1 || {
@@ -30,9 +29,11 @@ if ! command -v gdown >/dev/null 2>&1; then
   GDOWN="python3 -m gdown"
 fi
 
-$GDOWN 1W9dQvqRGylfUeHJcYqWwJrpYHIsYCVq_ -O "$DOWNLOAD_DIR/requests_minute.zip"
-$GDOWN 1Ooentp5nUeC2qKig8QSvJAaRgk3Kix_v -O "$DOWNLOAD_DIR/function_delay_minute.zip"
-$GDOWN 1COvoR8VwQnwxstOHuJj_YjlSaMv_jDLT -O "$DOWNLOAD_DIR/memory_limit_minute.zip"
+for file in "${FILES[@]}"; do
+  name="${file%%:*}"
+  id="${file#*:}"
+  $GDOWN "$id" -O "$DOWNLOAD_DIR/$name.zip"
+done
 
 # Extract archives
 for z in "$DOWNLOAD_DIR"/*.zip; do

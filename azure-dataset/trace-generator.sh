@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Example (Azure):  ./trace-generator.sh --source azure  -d d02 -t result_d02.csv -b 701 -e 710
-# Example (Huawei): ./trace-generator.sh --source huawei -d 0   -t huawei_day0.csv
+# Example (Huawei): ./trace-generator.sh --source huawei -d 0 -e 9 -t huawei_day0.csv
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
@@ -44,7 +44,7 @@ fi
 
 case "$SOURCE" in
   azure)
-    MAIN="org.graalvm.argo.dataset.generator.InvocationTraceGenerator"
+    MAIN="org.graalvm.argo.dataset.generator.AzureInvocationTraceGenerator"
     ;;
   huawei)
     MAIN="org.graalvm.argo.dataset.generator.HuaweiInvocationTraceGenerator"
