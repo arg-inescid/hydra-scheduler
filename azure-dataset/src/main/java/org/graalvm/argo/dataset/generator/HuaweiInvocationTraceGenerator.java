@@ -136,9 +136,9 @@ public class HuaweiInvocationTraceGenerator extends AbstractInvocationTraceGener
                 throw new IOException("Empty header in one of the files for day " + day);
             }
 
-            int functionCount = reqHeader.split(DELIMITER, -1).length - 2;
-            int delayFunctionCount = delayHeader.split(DELIMITER, -1).length - 2;
-            int memFunctionCount = memHeader.split(DELIMITER, -1).length - 2;
+            int functionCount = reqHeader.split(SOURCE_DELIMITER, -1).length - 2;
+            int delayFunctionCount = delayHeader.split(SOURCE_DELIMITER, -1).length - 2;
+            int memFunctionCount = memHeader.split(SOURCE_DELIMITER, -1).length - 2;
             if (functionCount != delayFunctionCount || functionCount != memFunctionCount) {
                 throw new IOException("Header mismatch for day " + day + ": different function counts.");
             }
@@ -150,9 +150,9 @@ public class HuaweiInvocationTraceGenerator extends AbstractInvocationTraceGener
                    (delayLine = delayReader.readLine()) != null &&
                    (memLine = memReader.readLine()) != null) {
 
-                String[] reqRow = reqLine.split(DELIMITER, -1);
-                String[] delayRow = delayLine.split(DELIMITER, -1);
-                String[] memRow = memLine.split(DELIMITER, -1);
+                String[] reqRow = reqLine.split(SOURCE_DELIMITER, -1);
+                String[] delayRow = delayLine.split(SOURCE_DELIMITER, -1);
+                String[] memRow = memLine.split(SOURCE_DELIMITER, -1);
 
                 int timeSeconds = Integer.parseInt(reqRow[1]);
                 if (timeSeconds < dayStartSeconds || timeSeconds >= dayEndSeconds) {

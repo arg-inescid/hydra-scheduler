@@ -7,6 +7,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.graalvm.argo.dataset.Invocation;
+import org.graalvm.argo.dataset.InvocationTraceFormat;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -21,8 +22,7 @@ import java.util.stream.Collectors;
 
 abstract class AbstractInvocationTraceGenerator {
 
-    public static final String DELIMITER = ",";
-    private static final String TRACE_HEADER = "HashOwner,HashFunction,AverageAllocatedMb,AverageDuration,Timestamp";
+    protected static final String SOURCE_DELIMITER = ",";
 
     protected void run(String[] args) throws Exception {
         Options options = prepareOptions();
@@ -105,7 +105,7 @@ abstract class AbstractInvocationTraceGenerator {
 
     protected void writeInvocations(String outputFilePath, List<Invocation> invocations) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath, false))) {
-            writer.write(TRACE_HEADER);
+            writer.write(InvocationTraceFormat.HEADER);
             writer.newLine();
             if (invocations.isEmpty()) {
                 return;
