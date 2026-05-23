@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
  */
 public class AzureInvocationTraceGenerator extends AbstractInvocationTraceGenerator {
 
-    public static final String DELIMITER = AbstractInvocationTraceGenerator.DELIMITER;
     private static final int MINUTES_COLUMN_OFFSET = 3;
 
     private final List<Invocation> invocations = new ArrayList<>();
@@ -62,7 +61,7 @@ public class AzureInvocationTraceGenerator extends AbstractInvocationTraceGenera
     }
 
     private void processFunction(String line, int firstMinute, int lastMinute) {
-        String[] splitRow = line.split(DELIMITER);
+        String[] splitRow = line.split(SOURCE_DELIMITER);
         String owner = splitRow[0];
         String app = splitRow[1];
         String function = splitRow[2];

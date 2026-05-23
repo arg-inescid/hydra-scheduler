@@ -13,7 +13,7 @@ This directory contains the source code of the tools (written in Java) and conve
 Usually, the sequence of steps to start working with the dataset is as follows:
 
 1. Build the tool with `build.sh`;
-2. Download the dataset files with `download_dataset.sh`;
+2. Download the dataset files with `download_dataset.sh --azure` or `download_dataset.sh --huawei`;
 3. Generate the trace with the desired duration using `trace-generator.sh`. This script accepts parameters. You can learn more about using the parameters by looking at the source code in `InvocationTraceGenerator.java`. The resulting trace will be a CSV file containing a list of invocations;
 4. Add a realistic language distribution of the functions in your trace by running `trace-languages.sh`. This script accepts two parameters: "i" (long version: "input") - the input trace and "t" (long version: "trace") - the output trace;
 
