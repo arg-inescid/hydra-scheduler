@@ -100,6 +100,27 @@ public class InvocationTraceSimulator {
         return simulateInvocations(inputFile, new SimulationState(), keepalive, interval);
     }
 
+    protected List<OutputEntry> simulateInvocations(List<Invocation> invocations, int keepalive, int interval) {
+        return simulateInvocations(invocations, new SimulationState(), keepalive, interval);
+    }
+
+    protected List<OutputEntry> simulateInvocations(List<Invocation> invocations, SimulationState ss, int keepalive, int interval) {
+        List<OutputEntry> statistics = new LinkedList<>();
+
+        System.err.println("Simulating trace with " + invocations.size() + " invocations and keepalive of " + keepalive);
+        for (Invocation currentInvocation : invocations) {
+            processInvocation(statistics, currentInvocation, ss, keepalive, interval);
+
+            if (ss.invocationsProcessed % Math.max(invocations.size() / 100, 1) == 0) {
+                System.err.println(String.format("Processed %s (%.2f %%)", ss.invocationsProcessed, ((float) ss.invocationsProcessed / (float) invocations.size() * 100)));
+            }
+        }
+
+        statistics.add(updateStatistics(ss.activeInvocations, ss.runningInvocations(), ss));
+
+        return statistics;
+    }
+
     protected List<OutputEntry> simulateInvocations(String inputFile, SimulationState ss, int keepalive, int interval) {
         List<OutputEntry> statistics = new LinkedList<>();
 
@@ -109,7 +130,7 @@ public class InvocationTraceSimulator {
             br.readLine(); // Skip header
             
             while ((line = br.readLine()) != null) {
-                String[] splitRow = line.split(InvocationTraceGenerator.DELIMITER);
+                String[] splitRow = line.split(InvocationTraceFormat.DELIMITER);
                 
                 Invocation currentInvocation = createInvocation(splitRow[0], splitRow[1], Integer.valueOf(splitRow[2]), Integer.valueOf(splitRow[3]), Integer.valueOf(splitRow[4]));
 
