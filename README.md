@@ -6,15 +6,16 @@ This repository contains three folders:
 2. `fake-worker` - contains code of a serverless worker that "accepts" function invocations and responses after the indicated duration;
 3. `scripts` - contains convenience scripts to execute traces with the `azure-dataset` tools.
 
-## Azure Dataset Tools
+## Dataset Tools
 
 This directory contains the source code of the tools (written in Java) and convenience `.sh` scripts that invoke the tools.
+The trace generator supports the Azure Functions 2019 dataset and the Huawei private 2023 minute datasets.
 
 Usually, the sequence of steps to start working with the dataset is as follows:
 
 1. Build the tool with `build.sh`;
 2. Download the dataset files with `download_dataset.sh --azure` or `download_dataset.sh --huawei`;
-3. Generate the trace with the desired duration using `trace-generator.sh`. This script accepts parameters. You can learn more about using the parameters by looking at the source code in `InvocationTraceGenerator.java`. The resulting trace will be a CSV file containing a list of invocations;
+3. Generate the trace with the desired duration using `trace-generator.sh --source <azure|huawei>`. This script accepts parameters. You can learn more about using the parameters by looking at the source code in `AzureInvocationTraceGenerator.java` or `HuaweiInvocationTraceGenerator.java`. The resulting trace will be a CSV file containing a list of invocations;
 4. Add a realistic language distribution of the functions in your trace by running `trace-languages.sh`. This script accepts two parameters: "i" (long version: "input") - the input trace and "t" (long version: "trace") - the output trace;
 
 Now you have the tools built and the trace generated. If you want to ensure the correct language distribution, you can run the `check-multifunc.sh` script to see how many invocations per language there are.
