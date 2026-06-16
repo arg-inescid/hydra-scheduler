@@ -32,10 +32,12 @@ public class HuaweiInvocationTraceGenerator extends AbstractInvocationTraceGener
     private static final int MINUTES_PER_DAY = 1440;
     private static final int SECONDS_PER_DAY = 86_400;
 
+    /* Starts the Huawei trace generator from command-line arguments. */
     public static void main(String[] args) throws Exception {
         new HuaweiInvocationTraceGenerator().run(args);
     }
 
+    /* Adds Huawei-specific input and minute range options. */
     @Override
     protected void addSourceOptions(Options options) {
         Option day = new Option("d", "day", true, "Input dataset day (000-234).");
@@ -63,6 +65,7 @@ public class HuaweiInvocationTraceGenerator extends AbstractInvocationTraceGener
         options.addOption(lastMinute);
     }
 
+    /* Reads command-line options and loads the requested Huawei trace range. */
     @Override
     protected List<Invocation> loadInvocations(CommandLine cmd) throws IOException, ParseException {
         String inputBaseDir = cmd.getOptionValue("inputDir", "input/huawei_private_minute");
@@ -81,6 +84,7 @@ public class HuaweiInvocationTraceGenerator extends AbstractInvocationTraceGener
         return loadInvocations(inputBaseDir, startDay, endDay, firstMinute, lastMinute);
     }
 
+    /* Parses a dataset day value from the command line. */
     private int parseDay(String dayStr) throws ParseException {
         try {
             return Integer.parseInt(dayStr);
@@ -89,12 +93,14 @@ public class HuaweiInvocationTraceGenerator extends AbstractInvocationTraceGener
         }
     }
 
+    /* Validates that the requested minute range is within one day. */
     private void validateMinuteRange(int firstMinute, int lastMinute) throws ParseException {
         if (firstMinute < 0 || lastMinute >= MINUTES_PER_DAY || firstMinute > lastMinute) {
             throw new ParseException("Invalid minute range: [" + firstMinute + "," + lastMinute + "]");
         }
     }
 
+    /* Loads and sorts invocations across the requested day range. */
     private List<Invocation> loadInvocations(String inputBaseDir,
                                              int startDay,
                                              int endDay,
@@ -108,6 +114,7 @@ public class HuaweiInvocationTraceGenerator extends AbstractInvocationTraceGener
         return invocations;
     }
 
+    /* Reads one Huawei dataset day and expands minute aggregates into invocations. */
     private void processDay(List<Invocation> invocations,
                             String inputBaseDir,
                             int day,
@@ -136,7 +143,9 @@ public class HuaweiInvocationTraceGenerator extends AbstractInvocationTraceGener
                 throw new IOException("Empty header in one of the files for day " + day);
             }
 
+            /* Huawei minute CSVs use two leading metadata columns before the per-function columns. */
             int functionCount = reqHeader.split(SOURCE_DELIMITER, -1).length - 2;
+            /* Delay and memory files must expose the same function columns in the same order. */
             int delayFunctionCount = delayHeader.split(SOURCE_DELIMITER, -1).length - 2;
             int memFunctionCount = memHeader.split(SOURCE_DELIMITER, -1).length - 2;
             if (functionCount != delayFunctionCount || functionCount != memFunctionCount) {
@@ -154,6 +163,7 @@ public class HuaweiInvocationTraceGenerator extends AbstractInvocationTraceGener
                 String[] delayRow = delayLine.split(SOURCE_DELIMITER, -1);
                 String[] memRow = memLine.split(SOURCE_DELIMITER, -1);
 
+                /* The dataset timestamps are absolute seconds; convert them to a minute within this day. */
                 int timeSeconds = Integer.parseInt(reqRow[1]);
                 if (timeSeconds < dayStartSeconds || timeSeconds >= dayEndSeconds) {
                     continue;
@@ -164,6 +174,7 @@ public class HuaweiInvocationTraceGenerator extends AbstractInvocationTraceGener
                 }
 
                 for (int functionId = 0; functionId < functionCount; functionId++) {
+                    /* Column index 2 maps functionId 0 because columns 0 and 1 are metadata. */
                     String countStr = reqRow[2 + functionId];
                     if (countStr == null || countStr.isEmpty()) {
                         continue;
@@ -185,6 +196,7 @@ public class HuaweiInvocationTraceGenerator extends AbstractInvocationTraceGener
                     String owner = "owner_" + functionId;
                     String function = "f_" + functionId;
 
+                    /* Expand each per-minute aggregate count into individual invocations spread across the minute. */
                     for (int i = 0; i < count; i++) {
                         int randomOffsetMs = ThreadLocalRandom.current().nextInt(SECONDS_PER_MINUTE * 1000);
                         long timestampMs = (long) timeSeconds * 1000L + randomOffsetMs;

@@ -77,6 +77,7 @@ public class AzureInvocationTraceGenerator {
 
             writeInvocationsToFile(currentInput, outputFilePath);
 
+            /* Clear temporary files */
             new File(inputFilePath + SORTED_FILE_SUFFIX).delete();
             new File(inputFilePath + TEMP_WORK_SUFFIX).delete();
             new File(inputFilePath + TEMP_BUFFER_SUFFIX).delete();
@@ -128,6 +129,7 @@ public class AzureInvocationTraceGenerator {
             }
         }
 
+        /* Stream from the final temp file to the final output file */
         try (BufferedReader reader = new BufferedReader(new FileReader(inputFilePath));
              BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath, false))) {
             writer.write(InvocationTraceFormat.HEADER);
@@ -173,6 +175,7 @@ public class AzureInvocationTraceGenerator {
         String app = splitRow[1];
         String function = splitRow[2];
 
+        /* If there is no record about this function about avg duration or memory, then skip */
         if (!FunctionInfoStorage.DURATIONS.containsKey(function) || !FunctionInfoStorage.MEMORIES.containsKey(app)) {
             ++skipped;
             return;
@@ -184,6 +187,7 @@ public class AzureInvocationTraceGenerator {
         if (compress) {
             compressedOwnerMapping.computeIfAbsent(owner, k -> compressedOwnerMapping.size());
             FunctionInfoStorage.COMPRESSED_MAPPING.computeIfAbsent(function, k -> FunctionInfoStorage.COMPRESSED_MAPPING.size());
+            // use compressed mappings
             owner = compressedOwnerMapping.get(owner).toString();
             function = FunctionInfoStorage.COMPRESSED_MAPPING.get(function).toString();
         }
@@ -222,12 +226,16 @@ public class AzureInvocationTraceGenerator {
         }
     }
 
+    /*
+     * Read data from the CSV file, generate timestamps for the desired time frame.
+     * File expected syntax: HashOwner, HashApp, HashFunction, Trigger, 1, 2, 3...
+     */
     private void processDay(String datasetId, int firstMinute, int lastMinute) {
         inputFilePath = "input/invocations_per_function_md.anon." + datasetId + ".csv";
         try (BufferedReader reader = new BufferedReader(new FileReader(inputFilePath));
              BufferedWriter writer = new BufferedWriter(new FileWriter(inputFilePath + UNSORTED_FILE_SUFFIX, false))) {
             String line;
-            reader.readLine();
+            reader.readLine(); // To skip the header
             int functionCounter = 1;
 
             while ((line = reader.readLine()) != null) {
@@ -241,6 +249,7 @@ public class AzureInvocationTraceGenerator {
             System.exit(1);
         }
 
+        /* At this point, we have the unordered list of all invocations */
         try {
             ExternalTraceSorter.sortTraceByTimestamp(inputFilePath + UNSORTED_FILE_SUFFIX, inputFilePath + SORTED_FILE_SUFFIX, false);
             System.out.println("Finished sorting.");
@@ -253,6 +262,9 @@ public class AzureInvocationTraceGenerator {
         }
     }
 
+    /*
+     * Generic downscaling logic
+     */
     @FunctionalInterface
     private interface Downscaler {
         void perform(String input, String output, int limit) throws IOException;
@@ -269,9 +281,12 @@ public class AzureInvocationTraceGenerator {
 
         action.perform(input, output, limit);
         System.err.println("Finished downscaling to " + limit + " " + label + ".");
+
+        // Swap files
         return output;
     }
 
+    /* Filters the input file line by line, keeping only the rows that satisfy the provided predicate */
     private void processFile(String inputPath, String outputPath, Predicate<String[]> rowFilter) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(inputPath));
              BufferedWriter writer = new BufferedWriter(new FileWriter(outputPath))) {
@@ -286,6 +301,7 @@ public class AzureInvocationTraceGenerator {
         }
     }
 
+    /* Remove invocations that go over the maximum number of concurrent invocations. */
     private void downscaleByConcurrentInvocations(String inputPath, String outputPath, int maxConcInv) throws IOException {
         List<Integer> activeInvocationsEndTimes = new LinkedList<>();
 
@@ -294,6 +310,7 @@ public class AzureInvocationTraceGenerator {
             int timestamp = Integer.parseInt(splitRow[4]);
             int endTimestamp = timestamp + duration;
 
+            /* Note: this is REALLY slow */
             activeInvocationsEndTimes.removeIf(endTime -> timestamp >= endTime);
 
             if (activeInvocationsEndTimes.size() < maxConcInv) {
@@ -304,6 +321,7 @@ public class AzureInvocationTraceGenerator {
         });
     }
 
+    /* Remove invocations that are not from the N more popular users. */
     private void downscaleByUser(String inputPath, String outputPath, int maxUsers) throws IOException {
         Set<String> selectedOwners = owners.values().stream()
                 .sorted(Comparator.comparingInt(Owner::getFunctions).reversed())
@@ -312,7 +330,9 @@ public class AzureInvocationTraceGenerator {
         processFile(inputPath, outputPath, splitRow -> selectedOwners.contains(splitRow[0]));
     }
 
+    /* Remove invocations that are not from the N first functions that appear in the trace. */
     private void downscaleByFunctions(String inputPath, String outputPath, int maxFunctions) throws IOException {
+        /* Count function frequencies */
         Map<String, Long> invocationsFunction = new HashMap<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(inputPath))) {
             String line;
@@ -333,9 +353,11 @@ public class AzureInvocationTraceGenerator {
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
 
+        /* Filter and write */
         processFile(inputPath, outputPath, splitRow -> selectedFunctions.contains(splitRow[1]));
     }
 
+    /* Remove invocations that go over the maximum memory. */
     private void downscaleByMemory(String inputPath, String outputPath, int maxMemory) throws IOException {
         List<Invocation> activeInvocations = new LinkedList<>();
 
