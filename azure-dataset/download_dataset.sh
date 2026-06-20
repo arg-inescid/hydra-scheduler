@@ -9,12 +9,10 @@ NC='\033[0m'
 usage() {
   cat <<EOF
 Usage: $(basename "$0") --azure | --huawei | --ibm
-Usage: $(basename "$0") --azure | --huawei | --ibm
 
 Options:
   --azure    Download and extract the Azure Functions 2019 dataset.
   --huawei   Download and extract the Huawei private 2023 minute datasets.
-  --ibm      Download and extract the IBM Cloud Code Engine traces.
   --ibm      Download and extract the IBM Cloud Code Engine traces.
   -h, --help Show this help message.
 EOF
@@ -181,9 +179,6 @@ case "$1" in
     ;;
   --huawei)
     download_huawei_dataset
-    ;;
-  --ibm)
-    download_ibm_dataset
     ;;
   --ibm)
     download_ibm_dataset
