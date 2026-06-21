@@ -26,6 +26,7 @@ public class IbmInvocationTraceGenerator extends AbstractInvocationTraceGenerato
 
     private static final int MINUTES_PER_WEEK = 7 * 24 * 60;
     private static final int MS_PER_MINUTE = 60_000;
+    private static final long MS_PER_WEEK = (long) MINUTES_PER_WEEK * MS_PER_MINUTE;
 
     private static final int OWNER_COLUMN = 0;
     private static final int FUNCTION_COLUMN = 1;
@@ -114,7 +115,7 @@ public class IbmInvocationTraceGenerator extends AbstractInvocationTraceGenerato
             if (!inputFile.exists()) {
                 throw new IOException("Missing IBM CSV input file: " + inputFile);
             }
-            processWeek(invocations, inputFile, week, firstMinute, lastMinute);
+            processWeek(invocations, inputFile, week, startWeek, firstMinute, lastMinute);
         }
         invocations.sort(Comparator.comparingInt(Invocation::getTimestamp));
         return invocations;
@@ -123,11 +124,12 @@ public class IbmInvocationTraceGenerator extends AbstractInvocationTraceGenerato
     private void processWeek(List<Invocation> invocations,
                              File inputFile,
                              int week,
+                             int startWeek,
                              int firstMinute,
                              int lastMinute) throws IOException {
         int startTimestampMs = firstMinute * MS_PER_MINUTE;
         int endTimestampMs = ((lastMinute + 1) * MS_PER_MINUTE) - 1;
-        int weekOffsetMs = (week - 1) * MINUTES_PER_WEEK * MS_PER_MINUTE;
+        long weekOffsetMs = (long) (week - startWeek) * MS_PER_WEEK;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(inputFile))) {
             String header = reader.readLine();
@@ -154,12 +156,18 @@ public class IbmInvocationTraceGenerator extends AbstractInvocationTraceGenerato
                     continue;
                 }
 
+                long traceTimestampMs = weekOffsetMs + timestampMs;
+                if (traceTimestampMs > Integer.MAX_VALUE) {
+                    throw new IOException("IBM trace timestamp exceeds supported int range. "
+                            + "Generate a smaller week range or migrate Invocation timestamps to long.");
+                }
+
                 invocations.add(new Invocation(
                         row[OWNER_COLUMN],
                         row[FUNCTION_COLUMN],
                         memoryMb,
                         durationMs,
-                        weekOffsetMs + timestampMs));
+                        (int) traceTimestampMs));
             }
         }
     }

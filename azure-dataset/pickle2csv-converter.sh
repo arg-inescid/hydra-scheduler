@@ -241,15 +241,13 @@ def convert_week_pickle(week_path, memory_map):
                     skipped_records += 1
                     continue
 
-                window_start = min(invocation_times[:n])
-
                 for ts, dur in zip(invocation_times[:n], exec_times[:n]):
                     row = (
                         namespace,
                         app,
                         memory / 1024,
                         int(round(dur)),
-                        int(round((ts - window_start) * 1000)),
+                        int(round(ts * 1000)),
                     )
                     emitted_rows += 1
                     if SORT_OUTPUT:
