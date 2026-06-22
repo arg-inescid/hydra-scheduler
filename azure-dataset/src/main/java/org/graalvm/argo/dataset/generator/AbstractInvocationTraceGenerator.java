@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 abstract class AbstractInvocationTraceGenerator {
 
     protected static final String SOURCE_DELIMITER = ",";
+    private static final String ANSI_RED = "\u001B[31m";
+    private static final String ANSI_RESET = "\u001B[0m";
 
     protected void run(String[] args) throws Exception {
         Options options = prepareOptions();
@@ -32,8 +34,10 @@ abstract class AbstractInvocationTraceGenerator {
             applyDownscaling(cmd, invocations);
             writeInvocations(cmd.getOptionValue("trace"), invocations);
         } catch (ParseException e) {
-            System.out.println(e.getMessage());
-            new HelpFormatter().printHelp("utility-name", options);
+            System.out.println(ANSI_RED + e.getMessage() + ANSI_RESET);
+            if (!e.getMessage().contains("exceeds supported int timestamp range")) {
+                new HelpFormatter().printHelp("utility-name", options);
+            }
         }
     }
 

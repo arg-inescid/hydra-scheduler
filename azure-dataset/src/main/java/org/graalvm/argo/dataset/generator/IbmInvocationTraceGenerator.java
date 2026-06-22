@@ -79,6 +79,7 @@ public class IbmInvocationTraceGenerator extends AbstractInvocationTraceGenerato
             endWeek = singleWeek;
         }
         validateWeekRange(startWeek, endWeek);
+        validateTimestampRangeCapacity(startWeek, endWeek, lastMinute);
 
         String inputDir = cmd.getOptionValue("inputDir", "input/ibm_cloud_code_engine/data");
         return loadInvocations(inputDir, startWeek, endWeek, firstMinute, lastMinute);
@@ -101,6 +102,19 @@ public class IbmInvocationTraceGenerator extends AbstractInvocationTraceGenerato
     private void validateMinuteRange(int firstMinute, int lastMinute) throws ParseException {
         if (firstMinute < 0 || lastMinute >= MINUTES_PER_WEEK || firstMinute > lastMinute) {
             throw new ParseException("Invalid minute range: [" + firstMinute + "," + lastMinute + "]");
+        }
+    }
+
+    private void validateTimestampRangeCapacity(int startWeek, int endWeek, int lastMinute) throws ParseException {
+        long maxTimestampMs = ((long) (endWeek - startWeek) * MS_PER_WEEK)
+                + (((long) lastMinute + 1) * MS_PER_MINUTE)
+                - 1;
+        if (maxTimestampMs > Integer.MAX_VALUE) {
+            throw new ParseException("IBM trace time range exceeds supported int timestamp range. "
+                    + "Maximum generated timestamp would be " + maxTimestampMs
+                    + " ms, but the current simulator and executor support at most "
+                    + Integer.MAX_VALUE
+                    + " ms. Generate a smaller week/minute range.");
         }
     }
 
@@ -159,7 +173,7 @@ public class IbmInvocationTraceGenerator extends AbstractInvocationTraceGenerato
                 long traceTimestampMs = weekOffsetMs + timestampMs;
                 if (traceTimestampMs > Integer.MAX_VALUE) {
                     throw new IOException("IBM trace timestamp exceeds supported int range. "
-                            + "Generate a smaller week range or migrate Invocation timestamps to long.");
+                            + "Generate a smaller week range.");
                 }
 
                 invocations.add(new Invocation(
