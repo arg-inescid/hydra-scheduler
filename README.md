@@ -43,7 +43,7 @@ The IBM dataset contains weekly traffic and application-configuration pickles fo
 
 This repository supports IBM traces through two steps:
 
-1. `download_dataset.sh --ibm` clones the IBM trace repository, extracts the compressed pickle files with `7z`, and runs `pickle2csv-converter.sh`.
+1. `download_dataset.sh --ibm` clones the IBM trace repository, extracts the compressed pickle files with `7z`, and runs `pickle2csv-converter.py`.
 2. `trace-generator.sh --source ibm ...` reads the converted weekly CSV files and writes this repository's common invocation trace format.
 
 The IBM converter expects, or creates, the following local layout:

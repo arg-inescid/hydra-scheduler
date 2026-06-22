@@ -88,7 +88,7 @@ download_ibm_dataset() {
   local target_dir="$INPUT_DIR/ibm_cloud_code_engine"
   local repo_dir="$target_dir/repository"
   local data_dir="$target_dir/data"
-  local converter="$DIR/pickle2csv-converter.sh"
+  local converter="$DIR/pickle2csv-converter.py"
   local ibm_data_dir="$data_dir"
   local repo_url="https://github.com/ubc-cirrus-lab/ibm-cloud-code-engine-traces.git"
 
@@ -141,8 +141,13 @@ download_ibm_dataset() {
     exit 1
   fi
 
-  if [[ ! -x "$converter" ]]; then
-    echo "IBM pickle converter not found or not executable: $converter"
+  if ! command -v python3 >/dev/null 2>&1; then
+    echo "python3 not found. Install Python 3 first."
+    exit 1
+  fi
+
+  if [[ ! -f "$converter" ]]; then
+    echo "IBM pickle converter not found: $converter"
     exit 1
   fi
 
@@ -157,7 +162,7 @@ download_ibm_dataset() {
   fi
 
   echo -e "${GREEN}Converting IBM Cloud Code Engine pickles to CSV...${NC}"
-  IBM_DATA_DIR="$ibm_data_dir" "$converter"
+  IBM_DATA_DIR="$ibm_data_dir" python3 "$converter"
   echo -e "${GREEN}Converting IBM Cloud Code Engine pickles to CSV...done${NC}"
 
   echo -e "${GREEN}Removing IBM compressed repository staging directory...${NC}"

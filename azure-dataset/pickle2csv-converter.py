@@ -1,12 +1,5 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/usr/bin/env python3
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
-
-export IBM_DATA_DIR="${IBM_DATA_DIR:-input/ibm_cloud_code_engine/data}"
-
-python3 - <<'PY'
 import csv
 import gc
 import heapq
@@ -20,7 +13,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-BASE_DIR = Path(os.environ["IBM_DATA_DIR"])
+SCRIPT_DIR = Path(__file__).resolve().parent
+DEFAULT_IBM_DATA_DIR = SCRIPT_DIR / "input" / "ibm_cloud_code_engine" / "data"
+
 WEEK_GLOB = os.environ.get("IBM_WEEK_GLOB", "week_*.pickle")
 CHUNK_ROWS = int(os.environ.get("IBM_CSV_CHUNK_ROWS", "500000"))
 PROGRESS_ROWS = int(os.environ.get("IBM_PROGRESS_ROWS", "1000000"))
@@ -52,6 +47,17 @@ OUTPUT_COLUMNS = [
 
 def log(message):
     print(message, flush=True)
+
+
+def base_dir():
+    configured = os.environ.get("IBM_DATA_DIR")
+    if configured is None:
+        return DEFAULT_IBM_DATA_DIR
+
+    path = Path(configured)
+    if path.is_absolute():
+        return path
+    return SCRIPT_DIR / path
 
 
 def iter_records(obj, required_columns):
@@ -190,7 +196,8 @@ def merge_sorted_chunks(chunk_paths, csv_path):
 
 def convert_week_pickle(week_path, memory_map):
     start_time = time.monotonic()
-    log(f"[START] {week_path.name}: loading pickle ({week_path.stat().st_size / (1024 ** 3):.1f} GiB)")
+    size_gib = week_path.stat().st_size / (1024**3)
+    log(f"[START] {week_path.name}: loading pickle ({size_gib:.1f} GiB)")
     week_obj = pd.read_pickle(week_path)
     log(f"[LOAD] {week_path.name}: pickle loaded after {time.monotonic() - start_time:.1f}s")
     rows = []
@@ -302,52 +309,57 @@ def week_worker(week_path, memory_map, conn):
         conn.close()
 
 
-if not BASE_DIR.exists():
-    raise FileNotFoundError(f"Directory not found: {BASE_DIR}")
+def main():
+    data_dir = base_dir()
+    if not data_dir.exists():
+        raise FileNotFoundError(f"Directory not found: {data_dir}")
 
-app_configs_path = BASE_DIR / "app_configs.pickle"
-if not app_configs_path.exists():
-    raise FileNotFoundError(f"Missing app config pickle: {app_configs_path}")
+    app_configs_path = data_dir / "app_configs.pickle"
+    if not app_configs_path.exists():
+        raise FileNotFoundError(f"Missing app config pickle: {app_configs_path}")
 
-week_files = sorted(BASE_DIR.glob(WEEK_GLOB))
-if not week_files:
-    raise FileNotFoundError(f"No {WEEK_GLOB} files found under {BASE_DIR}")
+    week_files = sorted(data_dir.glob(WEEK_GLOB))
+    if not week_files:
+        raise FileNotFoundError(f"No {WEEK_GLOB} files found under {data_dir}")
 
-memory_map, skipped_configs = build_memory_map(app_configs_path)
-log(f"Loaded {len(memory_map)} app memory mappings from {app_configs_path}")
-if skipped_configs:
-    log(f"Skipped {skipped_configs} app config records without usable memory data")
-log(
-    f"Converting {len(week_files)} weekly files with chunk_rows={CHUNK_ROWS} "
-    f"sort_output={SORT_OUTPUT} progress_rows={PROGRESS_ROWS}"
-)
-
-total_rows = 0
-ctx = mp.get_context("fork")
-for week_path in week_files:
-    parent_conn, child_conn = ctx.Pipe(duplex=False)
-    process = ctx.Process(target=week_worker, args=(str(week_path), memory_map, child_conn))
-    process.start()
-    child_conn.close()
-    process.join()
-    if not parent_conn.poll():
-        raise RuntimeError(
-            f"Failed converting {week_path.name}: worker exited with code {process.exitcode}"
-        )
-    status, payload = parent_conn.recv()
-    parent_conn.close()
-    if process.exitcode != 0 or status != "ok":
-        raise RuntimeError(f"Failed converting {week_path.name}: {payload}")
-
-    result = payload
-    total_rows += result["rows"]
+    memory_map, skipped_configs = build_memory_map(app_configs_path)
+    log(f"Loaded {len(memory_map)} app memory mappings from {app_configs_path}")
+    if skipped_configs:
+        log(f"Skipped {skipped_configs} app config records without usable memory data")
     log(
-        f"[OK] {week_path.name} -> {result['csv'].name} "
-        f"rows={result['rows']} skipped_records={result['skipped_records']} "
-        f"missing_memory={result['skipped_missing_memory']} "
-        f"seconds={result['seconds']:.1f}"
+        f"Converting {len(week_files)} weekly files with chunk_rows={CHUNK_ROWS} "
+        f"sort_output={SORT_OUTPUT} progress_rows={PROGRESS_ROWS}"
     )
 
-log(f"Finished converting {len(week_files)} weekly files into CSV.")
-log(f"Total emitted rows: {total_rows}")
-PY
+    total_rows = 0
+    ctx = mp.get_context("fork")
+    for week_path in week_files:
+        parent_conn, child_conn = ctx.Pipe(duplex=False)
+        process = ctx.Process(target=week_worker, args=(str(week_path), memory_map, child_conn))
+        process.start()
+        child_conn.close()
+        process.join()
+        if not parent_conn.poll():
+            raise RuntimeError(
+                f"Failed converting {week_path.name}: worker exited with code {process.exitcode}"
+            )
+        status, payload = parent_conn.recv()
+        parent_conn.close()
+        if process.exitcode != 0 or status != "ok":
+            raise RuntimeError(f"Failed converting {week_path.name}: {payload}")
+
+        result = payload
+        total_rows += result["rows"]
+        log(
+            f"[OK] {week_path.name} -> {result['csv'].name} "
+            f"rows={result['rows']} skipped_records={result['skipped_records']} "
+            f"missing_memory={result['skipped_missing_memory']} "
+            f"seconds={result['seconds']:.1f}"
+        )
+
+    log(f"Finished converting {len(week_files)} weekly files into CSV.")
+    log(f"Total emitted rows: {total_rows}")
+
+
+if __name__ == "__main__":
+    main()
