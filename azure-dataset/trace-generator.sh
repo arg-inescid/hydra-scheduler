@@ -3,6 +3,7 @@ set -euo pipefail
 
 # Example (Azure):  ./trace-generator.sh --source azure  -d d02 -t result_d02.csv -b 701 -e 710
 # Example (Huawei): ./trace-generator.sh --source huawei -d 0 -e 9 -t huawei_day0.csv
+# Example (IBM):    ./trace-generator.sh --source ibm -w 1 -b 0 -e 9 -t ibm_week1.csv
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
@@ -12,7 +13,7 @@ cd "$DIR" || {
 }
 
 usage() {
-  echo "Usage: $0 --source <azure|huawei> [generator args]"
+  echo "Usage: $0 --source <azure|huawei|ibm> [generator args]"
   exit 1
 }
 
@@ -49,10 +50,19 @@ case "$SOURCE" in
   huawei)
     MAIN="org.graalvm.argo.dataset.generator.HuaweiInvocationTraceGenerator"
     ;;
+  ibm)
+    MAIN="org.graalvm.argo.dataset.generator.IbmInvocationTraceGenerator"
+    ;;
   *)
-    echo "Error: invalid --source '$SOURCE' (use: azure|huawei)."
+    echo "Error: invalid --source '$SOURCE' (use: azure|huawei|ibm)."
     usage
     ;;
 esac
 
-"$JAVA_HOME/bin/java" -cp "$JAR" "$MAIN" "${FORWARD_ARGS[@]}"
+if [[ -n "${JAVA_HOME:-}" ]]; then
+  JAVA_BIN="$JAVA_HOME/bin/java"
+else
+  JAVA_BIN="java"
+fi
+
+"$JAVA_BIN" -cp "$JAR" "$MAIN" "${FORWARD_ARGS[@]}"

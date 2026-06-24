@@ -9,7 +9,7 @@ This repository contains three folders:
 ## Dataset Tools
 
 This directory contains the source code of the tools (written in Java) and convenience `.sh` scripts that invoke the tools.
-The trace generator supports the Azure Functions 2019 dataset and the Huawei private 2023 minute datasets.
+The trace generator supports the Azure Functions 2019 dataset, the Huawei private 2023 minute datasets, and the IBM Cloud Code Engine traces.
 
 ### Trace sources
 
@@ -34,6 +34,32 @@ For each selected day and minute range, the generator reads the function columns
 
 The generated CSV is therefore a replayable workload derived from the trace's arrival rates, function identities, execution durations, and memory limits. It is not a full reproduction of every raw platform event in the Huawei dataset.
 
+The IBM Cloud Code Engine traces are published by the UBC Cirrus Lab:
+
+- Repository: [ubc-cirrus-lab/ibm-cloud-code-engine-traces](https://github.com/ubc-cirrus-lab/ibm-cloud-code-engine-traces)
+- Paper: [In-Production Characterization of an Open Source Serverless Platform and New Scaling Strategies](https://dl.acm.org/doi/10.1145/3767295.3769377)
+
+The IBM dataset contains weekly traffic and application-configuration pickles for IBM Cloud Code Engine. The repository README describes 10 weeks of traffic, more than 1.9 billion requests, hashed namespaces and applications, application memory configuration, invocation timestamps, and execution times.
+
+This repository supports IBM traces through two steps:
+
+1. `download_dataset.sh --ibm` clones the IBM trace repository, extracts the compressed pickle files with `7z`, and runs `pickle2csv-converter.py`.
+2. `trace-generator.sh --source ibm ...` reads the converted weekly CSV files and writes this repository's common invocation trace format.
+
+The IBM converter expects, or creates, the following local layout:
+
+- `azure-dataset/input/ibm_cloud_code_engine/data/app_configs.pickle` - application configuration, including requested memory;
+- `azure-dataset/input/ibm_cloud_code_engine/data/week_N.pickle` - weekly traffic pickles from the IBM trace repository;
+- `azure-dataset/input/ibm_cloud_code_engine/data/week_N.csv` - converted CSV files used by `IbmInvocationTraceGenerator`.
+
+The converted IBM CSV schema is:
+
+```text
+NamespaceHash,AppHash,AppContainerRequestMemory,AppExecTimes,InvocationTimes
+```
+
+`AppContainerRequestMemory` is written in GB in the intermediate IBM CSV and converted to MB in the final invocation trace. `AppExecTimes` is kept as the invocation duration in milliseconds. `InvocationTimes` is converted from seconds to milliseconds and preserved as a week-relative timestamp, so selected IBM traces retain the dataset's arrival pattern.
+
 ### Simulator overview
 
 The simulator replays a generated invocation trace in timestamp order. It models the lifecycle of function containers at a high level rather than executing real function code.
@@ -54,8 +80,8 @@ The optional AOT simulation mode extends this model with a sliding cold-start wi
 Usually, the sequence of steps to start working with the dataset is as follows:
 
 1. Build the tool with `build.sh`;
-2. Download the dataset files with `download_dataset.sh --azure` or `download_dataset.sh --huawei`;
-3. Generate the trace with the desired duration using `trace-generator.sh --source <azure|huawei>`. This script accepts parameters. You can learn more about using the parameters by looking at the source code in `AzureInvocationTraceGenerator.java` or `HuaweiInvocationTraceGenerator.java`. The resulting trace will be a CSV file containing a list of invocations;
+2. Download the dataset files with `download_dataset.sh --azure`, `download_dataset.sh --huawei`, or `download_dataset.sh --ibm`;
+3. Generate the trace with the desired duration using `trace-generator.sh --source <azure|huawei|ibm>`. This script accepts parameters. You can learn more about using the parameters by looking at the source code in `AzureInvocationTraceGenerator.java`, `HuaweiInvocationTraceGenerator.java`, or `IbmInvocationTraceGenerator.java`. The resulting trace will be a CSV file containing a list of invocations;
 4. Add a realistic language distribution of the functions in your trace by running `trace-languages.sh`. This script accepts two parameters: "i" (long version: "input") - the input trace and "t" (long version: "trace") - the output trace;
 
 Now you have the tools built and the trace generated. If you want to ensure the correct language distribution, you can run the `check-multifunc.sh` script to see how many invocations per language there are.
@@ -79,7 +105,7 @@ The sequence of steps to launch fake workers:
 4. You can check the logs of your workers in `/tmp/fake-workers`;
 5. Run `cleanup-swarm.sh` to terminate all running workers.
 
-If you want to test yor fake worker, you can run `run-client.sh` and start typing messages. This script expects the fake worker to run on port 5454.
+If you want to test your fake worker, you can run `run-client.sh` and start typing messages. This script expects the fake worker to run on port 5454.
 
 ## Scripts
 
