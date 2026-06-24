@@ -1,7 +1,5 @@
 package org.graalvm.argo.dataset;
 
-import org.graalvm.argo.dataset.generator.InvocationTraceGenerator;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.FileInputStream;
@@ -141,7 +139,7 @@ public class InvocationTraceSimulator {
             br.readLine(); // Skip header
             
             while ((line = br.readLine()) != null) {
-                String[] splitRow = line.split(InvocationTraceGenerator.DELIMITER);
+                String[] splitRow = line.split(InvocationTraceFormat.DELIMITER);
                 
                 Invocation currentInvocation = createInvocation(splitRow[0], splitRow[1], Integer.valueOf(splitRow[2]), Integer.valueOf(splitRow[3]), Integer.valueOf(splitRow[4]));
 
