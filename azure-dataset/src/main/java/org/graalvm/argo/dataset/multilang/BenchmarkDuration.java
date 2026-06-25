@@ -15,8 +15,9 @@ public class BenchmarkDuration {
 
         addBenchmark(FunctionLanguage.JAVA, "jvhw", 5);
         addBenchmark(FunctionLanguage.JAVA, "jvfh", 8);
-        addBenchmark(FunctionLanguage.JAVA, "jvcl", 4430);
         addBenchmark(FunctionLanguage.JAVA, "jvhr", 7);
+/*
+	addBenchmark(FunctionLanguage.JAVA, "jvcl", 4430);
         addBenchmark(FunctionLanguage.JAVA, "jvvp", 25175);
 
         addBenchmark(FunctionLanguage.PYTHON, "pyhw", 5);
@@ -34,6 +35,7 @@ public class BenchmarkDuration {
         addBenchmark(FunctionLanguage.JAVASCRIPT, "jsdh", 5);
         addBenchmark(FunctionLanguage.JAVASCRIPT, "jsth", 25);
         addBenchmark(FunctionLanguage.JAVASCRIPT, "jsup", 10);
+*/
     }
 
     private static void addBenchmark(FunctionLanguage language, String name, int duration) {

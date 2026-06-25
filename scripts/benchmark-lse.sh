@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Example usage of this script:
-# bash benchmark-lse.sh hy|hy-sf|hy-si|ow /path/to/dataset/file --single|--multi </path/to/results/folder>
+# bash benchmark-lse.sh hy|hy-sf|hy-si|ow|gh /path/to/dataset/file --single|--multi </path/to/results/folder>
 # The structure of the .csv file should be as follows:
 # HashOwner HashFunction AverageAllocatedMb AverageDuration Timestamp
 #
@@ -11,6 +11,8 @@
 function DIR {
     echo "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 }
+
+export LOCAL_EXECUTION="yes"
 
 # Defines some variables and functions
 source $(DIR)/shared.sh
@@ -90,8 +92,8 @@ elif [[ "$MODE" = "ow" ]]; then
     LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/ow-lm.json"
 elif [[ "$MODE" = "kn" ]]; then
     LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/kn-lm.json"
-elif [[ "$MODE" = "gos" ]]; then
-    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/gos-lm.json"
+elif [[ "$MODE" = "gh" ]]; then
+    LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/gh-lm.json"
 elif [[ "$MODE" = "gos-native" ]]; then
     LAMBDA_MANAGER_CONFIGURATION="$ARGO_HOME/run/configs/manager/gos-native-lm.json"
 else

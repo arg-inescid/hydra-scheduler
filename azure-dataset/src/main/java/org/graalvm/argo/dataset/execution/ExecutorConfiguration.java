@@ -50,7 +50,7 @@ public class ExecutorConfiguration {
             return FunctionRuntime.HYDRA;
         } else if ("ow".equals(executionMode)) {
             return FunctionRuntime.OPENWHISK;
-        } else if ("gos".equals(executionMode) || "gos-native".equals(executionMode)) {
+        } else if ("gh".equals(executionMode)) {
             return FunctionRuntime.GRAALOS;
         } else if ("kn".equals(executionMode)) {
             return FunctionRuntime.KNATIVE;
@@ -59,14 +59,14 @@ public class ExecutorConfiguration {
     }
 
     private String getInvocationCollocation(String executionMode) {
-        if ("hy".equals(executionMode) || "hy-sf".equals(executionMode) || "hy-fc".equals(executionMode) || "kn".equals(executionMode)) {
+        if ("hy".equals(executionMode) || "hy-sf".equals(executionMode) || "hy-fc".equals(executionMode) || "kn".equals(executionMode) || "gh".equals(executionMode)) {
             return "true";
         }
         return "false";
     }
 
     private String getFunctionIsolation(String executionMode) {
-        if ("hy".equals(executionMode) || "hy-fc".equals(executionMode)) {
+        if ("hy".equals(executionMode) || "hy-fc".equals(executionMode) || "gh".equals(executionMode) ) {
             return "false";
         }
         return "true";
@@ -79,7 +79,7 @@ public class ExecutorConfiguration {
             case OPENWHISK:
                 return "ow-benchmarks.json";
             case GRAALOS:
-                return "gos-benchmarks.json";
+                return "gh-benchmarks.json";
             case KNATIVE:
                 return "kn-benchmarks.json";
         }

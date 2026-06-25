@@ -1,0 +1,33 @@
+{
+    "jvhw" : {
+      "language" : "java",
+      "benchmarkName" : "jvhw",
+      "code" : "{{GRAALOS_SEBS}}/serverless-benchmarks-java/hello-world/app",
+      "entryPoint" : "irrelevant",
+      "payload" : "{}",
+      "memory"  : 512,
+      "duration" : 5,
+      "svmId" : "9001"
+    },
+    "jvfh" : {
+      "language" : "java",
+      "benchmarkName" : "jvfh",
+      "code" : "{{GRAALOS_SEBS}}/serverless-benchmarks-java/file-hashing/app",
+      "entryPoint" : "irrelevant",
+      "payload" : "{}",
+      "memory"  : 1024,
+      "duration" : 8,
+      "svmId" : "9002"
+    },
+    "jvhr" : {
+      "language" : "java",
+      "benchmarkName" : "jvhr",
+      "code" : "{{GRAALOS_SEBS}}/serverless-benchmarks-java/http-request/app",
+      "entryPoint" : "irrelevant",
+      "payload" : "{}",
+      "memory"  : 512,
+      "duration" : 7,
+      "svmId" : "9003"
+    }
+  }
+  

@@ -58,18 +58,8 @@ public class MultiWorkerInvocationTraceExecutor extends InvocationTraceExecutor 
     }
 
     private AbstractMemoryManagerFactory getMemoryManagerFactory(ExecutorConfiguration config) {
-        if ("true".equals(config.invocationCollocation)) {
-            if ("true".equals(config.functionIsolation)) {
-                System.out.println("Using SingleFunctionMemoryManager");
-                return new SingleFunctionMemoryManagerFactory();
-            } else {
-                System.out.println("Using OwnerCollocationMemoryManager");
-                return new OwnerCollocationMemoryManagerFactory();
-            }
-        } else {
-            System.out.println("Using SingleInvocationMemoryManager");
-            return new SingleInvocationMemoryManagerFactory();
-        }
+        System.out.println("Using SingleInvocationMemoryManager");
+        return new SingleInvocationMemoryManagerFactory();
     }
 
     private RealWorker getRealWorker(AbstractMemoryManagerFactory factory) {
