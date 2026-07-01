@@ -8,11 +8,12 @@ NC='\033[0m'
 
 usage() {
   cat <<EOF
-Usage: $(basename "$0") --azure | --huawei
+Usage: $(basename "$0") --azure | --huawei | --ibm
 
 Options:
   --azure    Download and extract the Azure Functions 2019 dataset.
   --huawei   Download and extract the Huawei private 2023 minute datasets.
+  --ibm      Download and extract the IBM Cloud Code Engine traces.
   -h, --help Show this help message.
 EOF
 }
@@ -83,6 +84,95 @@ download_huawei_dataset() {
   echo -e "${GREEN}Huawei private 2023 minute datasets downloaded to: $target_dir${NC}"
 }
 
+download_ibm_dataset() {
+  local target_dir="$INPUT_DIR/ibm_cloud_code_engine"
+  local repo_dir="$target_dir/repository"
+  local data_dir="$target_dir/data"
+  local converter="$DIR/pickle2csv-converter.py"
+  local ibm_data_dir="$data_dir"
+  local repo_url="https://github.com/ubc-cirrus-lab/ibm-cloud-code-engine-traces.git"
+
+  if ! command -v git >/dev/null 2>&1; then
+    echo "git not found. Install git first."
+    exit 1
+  fi
+
+  if ! command -v 7z >/dev/null 2>&1; then
+    echo "7z not found. Install p7zip first, for example: sudo apt install p7zip-full p7zip-rar"
+    exit 1
+  fi
+
+  mkdir -p "$target_dir" "$data_dir"
+
+  echo -e "${GREEN}Downloading IBM Cloud Code Engine traces...${NC}"
+  if [[ -d "$repo_dir/.git" ]]; then
+    git -C "$repo_dir" pull --ff-only
+  elif [[ -e "$repo_dir" ]]; then
+    echo "Target path exists but is not a git repository: $repo_dir"
+    exit 1
+  else
+    git clone --depth 1 "$repo_url" "$repo_dir"
+  fi
+  echo -e "${GREEN}Downloading IBM Cloud Code Engine traces...done${NC}"
+
+  echo -e "${GREEN}Extracting IBM Cloud Code Engine traces...${NC}"
+  7z x -y "$repo_dir/compressed_data/app_configs.7z" "-o$data_dir"
+
+  for archive_part in "$repo_dir"/compressed_data/week_*.7z.001; do
+    7z x -y "$archive_part" "-o$data_dir"
+  done
+  echo -e "${GREEN}Extracting IBM Cloud Code Engine traces...done${NC}"
+
+  local missing=0
+  if [[ ! -f "$data_dir/app_configs.pickle" ]]; then
+    echo "Missing expected IBM file: $data_dir/app_configs.pickle"
+    missing=1
+  fi
+
+  for week in {1..10}; do
+    if [[ ! -f "$data_dir/week_$week.pickle" ]]; then
+      echo "Missing expected IBM file: $data_dir/week_$week.pickle"
+      missing=1
+    fi
+  done
+
+  if [[ "$missing" -ne 0 ]]; then
+    echo "IBM dataset extraction did not produce all expected files."
+    exit 1
+  fi
+
+  if ! command -v python3 >/dev/null 2>&1; then
+    echo "python3 not found. Install Python 3 first."
+    exit 1
+  fi
+
+  if [[ ! -f "$converter" ]]; then
+    echo "IBM pickle converter not found: $converter"
+    exit 1
+  fi
+
+  if [[ ! -f "$ibm_data_dir/app_configs.pickle" ]]; then
+    echo "Missing IBM app config pickle: $ibm_data_dir/app_configs.pickle"
+    exit 1
+  fi
+
+  if ! compgen -G "$ibm_data_dir/week_*.pickle" >/dev/null; then
+    echo "No IBM week_*.pickle files found under: $ibm_data_dir"
+    exit 1
+  fi
+
+  echo -e "${GREEN}Converting IBM Cloud Code Engine pickles to CSV...${NC}"
+  IBM_DATA_DIR="$ibm_data_dir" python3 "$converter"
+  echo -e "${GREEN}Converting IBM Cloud Code Engine pickles to CSV...done${NC}"
+
+  echo -e "${GREEN}Removing IBM compressed repository staging directory...${NC}"
+  rm -rf "$repo_dir"
+  echo -e "${GREEN}Removing IBM compressed repository staging directory...done${NC}"
+
+  echo -e "${GREEN}IBM Cloud Code Engine traces downloaded to: $target_dir${NC}"
+  echo -e "${GREEN}Trace generator input directory: $data_dir${NC}"
+}
+
 if [[ $# -ne 1 ]]; then
   usage
   exit 1
@@ -94,6 +184,9 @@ case "$1" in
     ;;
   --huawei)
     download_huawei_dataset
+    ;;
+  --ibm)
+    download_ibm_dataset
     ;;
   -h | --help)
     usage
